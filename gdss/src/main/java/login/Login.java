@@ -54,6 +54,7 @@ public class Login extends HttpServlet {
             UsernamePasswordToken token = new UsernamePasswordToken(request.getParameter("userName"), request.getParameter("password"));
             //this is all you have to do to support 'remember me' (no config - built in!):
             token.setRememberMe(true);
+            
             try {
                 currentUser.login( token );
                 //if no exception, that's it, we're done!
@@ -70,7 +71,7 @@ public class Login extends HttpServlet {
             } 
         }
         //response.sendRedirect("");
-		//response.getWriter().append("Served to: ").append(request.getContextPath());
+		response.getWriter().append("WELCOME TO THE PROJECT INDEX: ").append((CharSequence) currentUser.getPrincipal());
 	}
 
 	/**
