@@ -191,6 +191,18 @@ body {
   font-weight: 600;
   text-transform: uppercase;
 }
+
+.card .error {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 35px;
+  padding: 10px 0 10px 50px;
+  color: #ed2553;
+  font-size: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
 .card .input-container {
   position: relative;
   margin: 0 60px 50px;
@@ -263,7 +275,7 @@ body {
   cursor: pointer;
   position: relative;
   display: inline-block;
-  background: 0;
+  background: #b3abad;
   width: 240px;
   border: 2px solid #e3e3e3;
   padding: 20px 0;
@@ -313,19 +325,19 @@ body {
 }
 .card .footer {
   margin: 40px 0 0;
-  color: #d3d3d3;
+  color: grey;
   font-size: 24px;
   font-weight: 300;
   text-align: center;
 }
 .card .footer a {
-  color: inherit;
+  color: #6f6b6c;
   text-decoration: none;
   -webkit-transition: .3s ease;
   transition: .3s ease;
 }
 .card .footer a:hover {
-  color: #bababa;
+  color: #d06883;
 }
 .card.alt {
   position: absolute;
