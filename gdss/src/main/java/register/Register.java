@@ -90,10 +90,10 @@ public class Register extends HttpServlet {
 			}
 		}
 		if (result > 0) {
-        	getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
+        	getServletContext().getRequestDispatcher("/login.jsp").forward(request,response);
 		} else {
 			request.setAttribute("register", true);
-        	getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
+        	getServletContext().getRequestDispatcher("/login.jsp").forward(request,response);
 		}
 	}
 

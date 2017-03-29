@@ -46,18 +46,20 @@ public class SecurityCheck implements Filter {
 			url = ((HttpServletRequest) request).getServletPath().toString();
 		}
 		Subject currentUser = SecurityUtils.getSubject();
-		if (!url.contains("/login")) {
-			if (!currentUser.isAuthenticated()) {
-				request.setAttribute("errorMessage", "Please Log in!!");
-				RequestDispatcher rdp = request.getRequestDispatcher("/login.jsp");
-				rdp.forward(request, response);
-				return;
-			}
-		} else {
-			if (currentUser.isAuthenticated()) {
-				RequestDispatcher rdp = request.getRequestDispatcher("/index");
-				rdp.forward(request, response);
-				return;
+		if (!(url.contains("/resource") || url.contains("/Register"))) {
+			if (!url.contains("/login")) {
+				if (!currentUser.isAuthenticated()) {
+					request.setAttribute("errorMessage", "Please Log in!!");
+					RequestDispatcher rdp = request.getRequestDispatcher("/login.jsp");
+					rdp.forward(request, response);
+					return;
+				}
+			} else {
+				if (currentUser.isAuthenticated()) {
+					RequestDispatcher rdp = request.getRequestDispatcher("/index");
+					rdp.forward(request, response);
+					return;
+				}
 			}
 		}
 		chain.doFilter(request, response);

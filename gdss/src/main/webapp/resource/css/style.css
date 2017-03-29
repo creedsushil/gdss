@@ -329,6 +329,7 @@ body {
   font-size: 24px;
   font-weight: 300;
   text-align: center;
+  cursor: pointer;
 }
 .card .footer a {
   color: #6f6b6c;
@@ -437,6 +438,25 @@ body {
 }
 .card.alt .button-container button:active:before, .card.alt .button-container button:focus:before {
   display: none;
+}
+
+.forgotActive{
+	display: none;
+}
+
+.passRecovery .title .close:before {
+  content: '\00d7';
+}
+
+.passRecovery .title .close {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 60px;
+  display: inline;
+  color: #800000;
+  font-size: 58px;
+  font-weight: 400;
 }
 
 /* Keyframes */
