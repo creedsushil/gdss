@@ -46,7 +46,7 @@ public class SecurityCheck implements Filter {
 			url = ((HttpServletRequest) request).getServletPath().toString();
 		}
 		Subject currentUser = SecurityUtils.getSubject();
-		if (!(url.contains("/resource") || url.contains("/Register"))) {
+		if (!(url.contains("/resource") || url.contains("/Register") || url.contains("/PasswordRecovery"))) {
 			if (!url.contains("/login")) {
 				if (!currentUser.isAuthenticated()) {
 					request.setAttribute("errorMessage", "Please Log in!!");

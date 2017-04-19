@@ -61,35 +61,8 @@ public class Register extends HttpServlet {
 		// Allocate a output writer to write the response message into the
 		// network socket
 
-		Connection conn = null;
-		Statement stmt = null;
-		int result = 0;
-		try {
-			// Get a connection from the pool
-			conn = pool.getConnection();
-
-			// Normal JBDC programming hereafter. Close the Connection to return
-			// it to the pool
-			String query = "INSERT INTO tbl_user(email,userName,password) values('"
-					+ (String) request.getParameter("email") + "','" + (String) request.getParameter("username") + "','"
-					+ (String) request.getParameter("password") + "')";
-
-			stmt = conn.createStatement();
-			result = stmt.executeUpdate(query);
-		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
-			// ex.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close(); // return to pool
-			} catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-		}
-		if (result > 0) {
+		boolean result = register(request);
+		if (result) {
         	getServletContext().getRequestDispatcher("/login.jsp").forward(request,response);
 		} else {
 			request.setAttribute("register", true);
@@ -107,4 +80,36 @@ public class Register extends HttpServlet {
 		doGet(request, response);
 	}
 
+	protected boolean register(HttpServletRequest request){
+		Connection conn = null;
+		Statement stmt = null;
+		boolean result = false;
+		try {
+			// Get a connection from the pool
+			conn = pool.getConnection();
+
+			// Normal JBDC programming hereafter. Close the Connection to return
+			// it to the pool
+			String query = "INSERT INTO tbl_user(email,userName,password) values('"
+					+ (String) request.getParameter("email") + "','" + (String) request.getParameter("username") + "','"
+					+ (String) request.getParameter("password") + "')";
+
+			stmt = conn.createStatement();
+			result = stmt.execute(query);
+		} catch (SQLException ex) {
+			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			// ex.printStackTrace();
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close(); // return to pool
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 }

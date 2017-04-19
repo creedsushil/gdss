@@ -63,7 +63,7 @@
 			</h1>
 			<form>
 				<div class="input-container">
-					<input type="#{type}" id="#{label}" required="required" /> <label
+					<input type="#{type}" id="#{label}" required="required" style="text-transform: uppercase;"/> <label
 						for="#{label}">Username</label>
 					<div class="bar"></div>
 				</div>

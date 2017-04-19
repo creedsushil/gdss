@@ -51,7 +51,7 @@
 			</form>
 		</div>
 		<div class="card alt register">
-			<div class="toggle" title="Sign up"></div>
+			<div class="toggle"></div>
 			<c:if test="${not empty errorMessage && register}">
 				<h2 class="error" id="registerError" style="color: black;">${errorMessage}</h2>
 			</c:if>
@@ -60,6 +60,11 @@
 				<div class="close" onclick="$('#registerError').hide();"></div>
 			</h1>
 			<form action="Register" method="POST">
+				<div id="image" style="display: none;">
+					<input type="file" id="pp" name="profilePic" style="display: none;" />
+					<label for="#{label}" id="defImage" style="color: #f9f2f2;background-color: #fbbec9;position:relative;left:160px;"><i class="fa fa-user"
+						style="font-size: 100px;" aria-hidden="true"></i></label>
+				</div>
 				<div class="input-container">
 					<input type="email" id="#{label}" required="required" name="email" />
 					<label for="#{label}">Email</label>
@@ -67,9 +72,11 @@
 				</div>
 				<div class="input-container">
 					<input type="text" id="#{label}" required="required"
-						name="username" /> <label for="#{label}">Username</label>
+						style="text-transform: uppercase;" name="username" /> <label
+						for="#{label}">Username</label>
 					<div class="bar"></div>
 				</div>
+
 				<div class="input-container">
 					<input type="password" id="#{label}" required="required"
 						name="password" /> <label for="#{label}">Password</label>
@@ -92,10 +99,10 @@
 				Recovery Email
 				<div class="close recoveryClose"></div>
 			</h1>
-			<form method="POST">
+			<form method="POST" action="PasswordRecovery">
 				<div class="input-container">
-					<input type="email" id="recoveryEmail" required="required" name="email" />
-					<label for="#{label}">Email</label> <br />
+					<input type="email" id="recoveryEmail" required="required"
+						name="email" /> <label for="#{label}">Email</label> <br />
 					<div class="button-container">
 						<button>
 							<span>Go</span>
@@ -112,6 +119,14 @@
 		src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 
 	<script type="text/javascript" src="resource/js/index.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('#defImage').click(function(e) {
+				e.preventDefault();
+				$('#pp').click();
+			});
+		});
+	</script>
 
 </body>
 </html>

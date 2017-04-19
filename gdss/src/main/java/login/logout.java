@@ -1,25 +1,23 @@
-package index;
+package login;
 
 import java.io.IOException;
-
-import org.apache.shiro.subject.Subject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 
 /**
- * Servlet implementation class Index
+ * Servlet implementation class logout
  */
-public class Index extends HttpServlet {
+public class logout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Index() {
+    public logout() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -28,10 +26,9 @@ public class Index extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Subject currentUser = SecurityUtils.getSubject();
-		request.setAttribute("userName", currentUser.getPrincipal());
-        getServletContext().getRequestDispatcher("/view/dashboard.jsp").forward(request,response);
-    	
+		// TODO Auto-generated method stub
+		SecurityUtils.getSubject().logout();
+		getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
 	}
 
 	/**
