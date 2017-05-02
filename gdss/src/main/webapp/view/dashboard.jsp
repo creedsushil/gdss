@@ -3,6 +3,7 @@
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page isELIgnored="false"%>
+<%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -15,25 +16,15 @@
 	href='http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' />
 <link rel="stylesheet" type="text/css" href="resource/css/style.css" />
 
-
-<link rel="stylesheet"
-	href="resource/jhtmlarea/style/jHtmlArea.Editor.css" type="text/css" />
-<link rel="stylesheet" href="resource/jhtmlarea/style/jHtmlArea.css"
-	type="text/css" />
-<link rel="stylesheet" href="resource/jhtmlarea/style/cpm.css"
-	type="text/css" />
-<link rel="stylesheet"
-	href="resource/jhtmlarea/style/jqueryui/ui-lightness/jquery-ui-1.7.2.custom.css"
-	type="text/css" />
 <script
 	src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-<script type="text/javascript" src="resource/jhtmlarea/jHtmlArea.js"></script>
-<script type="text/javascript" src="resource/jhtmlarea/cpm.js"></script>
+
+<script type="text/javascript"
+	src="resource/tokenInput/src/jquery.tokeninput.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
 	type="text/css" />
-<link rel="stylesheet" href="resource/jhtmlarea/style/jHtmlArea.css"
-	type="text/css" />
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
 <meta name="viewport"
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 </head>
@@ -42,6 +33,7 @@
 
 	<section id="body" class="width"> <aside id="sidebar"
 		class="column-left"> <header>
+		<img src="<%=request.getContextPath()%>/image/5840eb5b-7a9e-417c-8b61-6311c1c4575e_angry-wolf-pictures-pretty" alt="Profile_Pic"/>
 	<h1>
 		<a href="#" style="text-transform: uppercase;">${userName}</a>
 	</h1>
@@ -50,61 +42,22 @@
 	<ul>
 		<li class="navBtns selected-item" id="home"><a href="#home">Home</a></li>
 		<li class="navBtns" id="group"><a href="#group">My Group</a></li>
-		<li class="navBtns" id="createGroup"><a href="#createGroup">Create New
-				Group</a></li>
+		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
+				New Group</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
-
-	<div id="main">
-		<table>
-			<thead>
-				<th>Name</th>
-				<th>Title</th>
-				<th>Time Remaining</th>
-			</thead>
-			<tbody>
-				<tr>
-					<td>My Group</td>
-					<td class="tdTitle" onclick="loadDiscussion();"
-						onmouseover="mousePointed(event);"
-						onmouseout="mouseRemoved(event);">Title of the discussion
-						Title of the discussion Title of the discussion Title of the
-						discussion Title of the discussion Title of the discussion Title
-						of the discussion Title of the discussion Title of the discussion
-						Title of the discussion Title of the discussion Title of the
-						discussion Title of the discussion Title of the discussion</td>
-					<td>3:40:44</td>
-				</tr>
-				<tr>
-					<td>My Group</td>
-					<td class="tdTitle">Title of the discussion</td>
-					<td>3:40:44</td>
-				</tr>
-				<tr>
-					<td>Create New Group</td>
-					<td class="tdTitle" onclick="loadDiscussion();">Title of the
-						discussion</td>
-					<td>3:40:44</td>
-				</tr>
-				<tr>
-					<td>Settings</td>
-					<td class="tdTitle" onclick="loadDiscussion();">Title of the
-						discussion</td>
-					<td>3:40:44</td>
-				</tr>
-				<tr>
-					<td>Sign out</td>
-					<td class="tdTitle" onclick="loadDiscussion();">Title of the
-						discussion</td>
-					<td>3:40:44</td>
-				</tr>
-			</tbody>
-
-		</table>
+	<div class="container" style="max-width: 700px; margin: 0 0 0 0;">
+		<div class="card" style="display: none;"></div>
+		<div class="card" style="padding: 0 !important;">
+			<div id="main">
+			<jsp:include page="recentGroups.jsp"></jsp:include>
+			</div>
+		</div>
 	</div>
- </article> <footer class="clear">
+
+	</article> <footer class="clear">
 	<p>&copy; Group decesion support system</p>
 	</footer> </section>
 
@@ -114,7 +67,7 @@
 	var current = "home";
 	$(function(){
 		var currentPage = document.location.hash;
-		if(currentPage.includes("#")){
+		if(currentPage.includes("#") && currentPage !="home"){
 			$("#main").hide();
 			currentPage = currentPage.split("#")[1];
 			var data = {page : currentPage};
@@ -158,7 +111,12 @@
 			var nextPage = next;
 			next = next == "createGroup"?"group":next;
 			var url = "<%=request.getContextPath()%>/" + next;
-	
+			if(next == "home"){
+				document.location.hash = null;
+				window.location.href = "index";
+				return false;
+			}
+
 			if (nextPage == current) {
 				return false;
 			} else {
@@ -172,17 +130,18 @@
 						$("#" + nextPage).addClass("selected-item");
 						current = nextPage;
 						document.location.hash = nextPage;
-						
+
 						$("#main").html(resp);
-						
+
 						$("#main").slideDown(600);
 					},
-					error:function(){
+					error : function() {
 						$("#main").slideDown(600);
 					}
 				});
 			}
 		});
+		
 	</script>
 
 </body>

@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page isELIgnored="false"%>
-<h1 class="title">Your groups</h1>
+<h1 class="title">Groups You Created</h1>
 <table>
 	<thead>
 		<th>Name</th>
@@ -9,6 +9,7 @@
 	</thead>
 	<tbody>
 		<%-- ${currentGroup } --%>
+		<c:if test="${currentGroup.length()>0}">
 		<c:forEach begin="0" end="${currentGroup.length() -1}" var="item">
 			<tr>
 				<td>${item +1 }</td>
@@ -17,6 +18,7 @@
 				<td id="timer_${item}" style="min-width: 157px"></td>
 			</tr>
 		</c:forEach>
+		</c:if>
 
 	</tbody>
 

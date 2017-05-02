@@ -85,9 +85,9 @@
 			</form>
 		</div>
 	</div>
-	<a id="portfolio" href="" title="View my portfolio!"><i
+	<!-- <a id="portfolio" href="" title="View my portfolio!"><i
 		class="fa fa-link"></i></a>
-	<a id="codepen" href="" title="Follow me!"><i class="fa fa-codepen"></i></a>
+	<a id="codepen" href="" title="Follow me!"><i class="fa fa-codepen"></i></a> -->
 	<script
 		src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 

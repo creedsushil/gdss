@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -59,7 +58,7 @@
 				Register
 				<div class="close" onclick="$('#registerError').hide();"></div>
 			</h1>
-			<form action="Register" method="POST">
+			<form action="Register" method="POST"  enctype="multipart/form-data">
 				<div id="image" style="display: none;">
 					<input type="file" id="pp" name="profilePic" style="display: none;" />
 					<label for="#{label}" id="defImage" style="color: #f9f2f2;background-color: #fbbec9;position:relative;left:160px;"><i class="fa fa-user"
@@ -113,8 +112,8 @@
 		</div>
 
 	</div>
-	<a id="portfolio" href="" title=""><i class="fa fa-link"></i></a>
-	<a id="codepen" href="" title=""><i class="fa fa-codepen"></i></a>
+<!-- 	<a id="portfolio" href="" title=""><i class="fa fa-link"></i></a>
+	<a id="codepen" href="" title=""><i class="fa fa-codepen"></i></a> -->
 	<script type="text/javascript"
 		src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 

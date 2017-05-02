@@ -31,6 +31,7 @@ tr {
 .tdTitle {
 	font-weight: bolder;
 	cursor: pointer;
+	min-width: 430px;
 }
 
 .pointed{
