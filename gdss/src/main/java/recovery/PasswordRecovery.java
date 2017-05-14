@@ -1,32 +1,11 @@
 package recovery;
 
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-
-import java.util.Properties;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 /**
  * Servlet implementation class PasswordRecovery
  */

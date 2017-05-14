@@ -77,13 +77,14 @@ public class PassRecoveryMethods {
 		return mailSent;
 	}
 
-	public int findUserByEmail(String email, HttpServletRequest request) {
+	public int findUserByEmail(String email, HttpServletRequest request) throws ServletException {
 		Connection conn = null;
 		Statement stmt = null;
 		Statement tokenStmt = null;
 		ResultSet result = null;
 		int userId = 0;
 		try {
+			init();
 			// Get a connection from the pool
 			conn = pool.getConnection();
 
@@ -142,11 +143,12 @@ public class PassRecoveryMethods {
 		return tokenCreated ? userId : 0;
 	}
 
-	public boolean recoverPassword(HttpServletRequest request) {
+	public boolean recoverPassword(HttpServletRequest request) throws ServletException {
 		Connection conn = null;
 		Statement stmt = null;
 		boolean result = false;
 		try {
+			init();
 			// Get a connection from the pool
 			conn = pool.getConnection();
 

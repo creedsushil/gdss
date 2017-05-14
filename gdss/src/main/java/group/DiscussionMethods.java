@@ -23,12 +23,6 @@ public class DiscussionMethods {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		try {
-			init();
-		} catch (ServletException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public static void init() throws ServletException {
@@ -59,6 +53,7 @@ public class DiscussionMethods {
 		Connection conn = null;
 		Statement stmt = null;
 		boolean result = false;
+		init();
 		try {
 			conn = establishConnection();
 			String query = "insert into tbl_comment(dis_id,user,comment) values(" + disId + ",'" + encryptedUserName
@@ -87,6 +82,7 @@ public class DiscussionMethods {
 		ResultSet result = null;
 		JSONArray returnResult = null;
 		try {
+			init();
 			conn = establishConnection();
 			String query = "select * from tbl_comment where dis_id="
 					+ Integer.parseInt((String) request.getParameter("id")) + " order by id asc";
@@ -124,6 +120,7 @@ public class DiscussionMethods {
 	}
 
 	public JSONArray searchUserByUserName() throws SQLException, ServletException {
+		init();
 		Connection conn = establishConnection();
 		Statement stmt = conn.createStatement();
 		Subject currentUser = SecurityUtils.getSubject();
@@ -137,7 +134,8 @@ public class DiscussionMethods {
 
 	}
 
-	public void addVote(HttpServletRequest request, int userId) throws SQLException {
+	public void addVote(HttpServletRequest request, int userId) throws SQLException, ServletException {
+		init();
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();
 		String query = "insert into tbl_vote(dis_id,vote_type,userId) values('"
@@ -149,7 +147,8 @@ public class DiscussionMethods {
 
 	}
 
-	public void deleteVote(int disId, int userId) throws SQLException {
+	public void deleteVote(int disId, int userId) throws SQLException, ServletException {
+		init();
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();
 		String query = "delete from tbl_vote where dis_id = '" + disId + "' and userId=" + userId;

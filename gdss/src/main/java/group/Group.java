@@ -238,7 +238,6 @@ public class Group extends HttpServlet {
 		return returnResult;
 	}
 
-	@SuppressWarnings("null")
 	public boolean saveGroup(HttpServletRequest request, HttpServletResponse response) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		Timestamp endDate = null;
@@ -251,7 +250,6 @@ public class Group extends HttpServlet {
 		int groupId = 0;
 		Connection conn = null;
 		Statement stmt = null;
-		@SuppressWarnings("unused")
 		int result = 0;
 		try {
 			conn = establishConnection();
@@ -385,7 +383,6 @@ public class Group extends HttpServlet {
 	public void sendEmailToParticipants(String participant,HttpServletRequest request){
 			final String username = "creedsushil2@gmail.com";
 			final String password = "webdesign@123";
-			boolean mailSent = false;
 			Properties props = new Properties();
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
@@ -405,10 +402,8 @@ public class Group extends HttpServlet {
 				message.setText("Please click the link below:\n\n" + request.getRequestURL());
 
 				Transport.send(message);
-				mailSent = true;
 
 			} catch (MessagingException e) {
-				mailSent = false;
 				throw new RuntimeException(e);
 			}
 			

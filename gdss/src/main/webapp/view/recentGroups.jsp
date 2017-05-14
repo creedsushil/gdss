@@ -1,6 +1,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page isELIgnored="false"%>
 <h1 class="title">All Groups</h1>
+
+<button class="topButton">
+<span>
+Open
+</span>
+<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+</button>
+
+<button class="topButton">
+<span>
+Closed
+</span>
+<i class="fa fa-lock" aria-hidden="true"></i>
+</button>
+
+
 <table>
 	<thead>
 		<th>Name</th>

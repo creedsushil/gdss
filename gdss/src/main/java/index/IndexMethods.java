@@ -24,7 +24,6 @@ public class IndexMethods {
 	static DataSource pool;
 	public static void main(String[] args) throws ServletException {
 		// TODO Auto-generated method stub
-		init();
 	}
 
 	public static void init() throws ServletException {
@@ -45,6 +44,7 @@ public class IndexMethods {
 	public JSONArray getRecentGroup(HttpServletRequest request, HttpServletResponse response)
 			throws JSONException, ServletException, IOException, SQLException {
 		int userId = 0;
+		init();
 		try {
 			userId = searchUserByUserName().getJSONObject(0).getInt("id");
 		} catch (JSONException e) {
@@ -68,7 +68,8 @@ public class IndexMethods {
 		return rs;
 	}
 
-	public JSONArray searchUserByUserName() throws SQLException {
+	public JSONArray searchUserByUserName() throws SQLException, ServletException {
+		init();
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();
 		Subject currentUser = SecurityUtils.getSubject();

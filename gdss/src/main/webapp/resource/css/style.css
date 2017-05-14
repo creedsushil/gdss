@@ -317,6 +317,31 @@ body {
 	text-align: center;
 }
 
+.topButton{
+	cursor: pointer;
+    background: grey;
+    color: white;
+    height: 32px;
+    width: 130px;
+    margin: 0px 0 10px 0;
+    font-weight: 800;
+    font-size: 100%;
+
+}
+
+.topButton:hover{
+	background: #ed2553;
+}
+
+.topButton:active{
+	background: yellow;
+}
+
+
+.selectedButton{
+	background : #969595 !important;
+}
+
 .card .button-container button {
 	outline: 0;
 	cursor: pointer;

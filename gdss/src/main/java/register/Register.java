@@ -2,9 +2,7 @@ package register;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.naming.InitialContext;
@@ -91,8 +89,7 @@ public class Register extends HttpServlet {
 
         // constructs the folder where uploaded file will be stored
         ServletContext context = getServletContext();
-        String uploadFolder = getServletContext().getRealPath("")
-                + File.separator + DATA_DIRECTORY;
+        String uploadFolder = context.getRealPath("/images");
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
         // Set overall request size constraint
@@ -118,8 +115,7 @@ public class Register extends HttpServlet {
                     File uploadedFile = new File(filePath);
                     //System.out.println(uploadedFile);
                     // saves the file to upload directory
-                    imagePath = filePath;
-                    filePathSaved = filePath;
+                    imagePath = fileName;
                     item.write(uploadedFile);
                 }
             }

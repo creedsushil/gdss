@@ -33,7 +33,7 @@
 
 	<section id="body" class="width"> <aside id="sidebar"
 		class="column-left"> <header>
-		<img src="<%=request.getContextPath()%>/image/5840eb5b-7a9e-417c-8b61-6311c1c4575e_angry-wolf-pictures-pretty" alt="Profile_Pic"/>
+		<!-- <img src="images/40fdf46e-dfba-4b17-8271-badcb4bafbcc_1a962197d9133cace9facf1037ffe4b1.jpg" alt="Profile_Pic"/> -->
 	<h1>
 		<a href="#" style="text-transform: uppercase;">${userName}</a>
 	</h1>
