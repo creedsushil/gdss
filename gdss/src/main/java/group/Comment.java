@@ -1,16 +1,11 @@
-package index;
+package group;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.apache.shiro.subject.Subject;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import converter.ResultSetConverter;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -21,25 +16,29 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.json.JSONArray;
+
+import converter.ResultSetConverter;
 
 /**
- * Servlet implementation class Index
+ * Servlet implementation class Comment
  */
-public class Index extends HttpServlet {
+public class Comment extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	IndexMethods im;
+	DiscussionMethods dm;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Index() {
+	public Comment() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void init() throws ServletException {
-		im = new IndexMethods();
+		dm = new DiscussionMethods();
 	}
 
 	/**
@@ -48,19 +47,31 @@ public class Index extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Subject currentUser = SecurityUtils.getSubject();
-		request.setAttribute("userName", currentUser.getPrincipal());
-		try {
-			request.setAttribute("currentGroup", im.getRecentGroup(request, response));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// TODO Auto-generated method stub
+		if (((String) request.getParameter("action")).equals("updateComment")) {
+			JSONArray comments = dm.getComments(request);
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.print(comments);
+			out.flush();
+		} else if (((String) request.getParameter("action")).equals("vote")) {
+			try {
+				boolean voted = dm.vote(request);
+				response.setContentType("application/json");
+				PrintWriter out = response.getWriter();
+				out.print(voted);
+				out.flush();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			boolean commentAdded = dm.addComment(request);
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.print(commentAdded);
+			out.flush();
 		}
-
-		getServletContext().getRequestDispatcher("/view/dashboard.jsp").forward(request, response);
 	}
 
 	/**
@@ -72,6 +83,4 @@ public class Index extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
-	
 }

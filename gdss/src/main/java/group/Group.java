@@ -9,7 +9,15 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -66,27 +74,27 @@ public class Group extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		// response.getWriter().append("Served at:
-		// ").append(request.getContextPath());
-		// getServletContext().getRequestDispatcher("/view/group.jsp").forward(request,response);
 		String pageData = (String) request.getParameter("page");
 		if (pageData.equals("createGroup")) {
 			createGroup(request, response);
 		} else if (pageData.equals("search")) {
 			response.setContentType("application/json");
-			// Get the printwriter object from response to write the required
-			// json object to the output stream
 			PrintWriter out = response.getWriter();
-			// Assuming your json object is **jsonObject**, perform the
-			// following, it will return your json object
 			out.print(searchEmail(request, response));
 			out.flush();
-		} else {
+		} else if (pageData.equals("groupWithId")) {
+			groupWithId(request, response);
+		} else if(pageData.equals("countVote")){
+			try {
+				countVote(request,response);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
 			try {
 				getGroupList(request, response);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -126,6 +134,59 @@ public class Group extends HttpServlet {
 			getServletContext().getRequestDispatcher("/view/createGroup.jsp").forward(request, response);
 		}
 
+	}
+
+	public void groupWithId(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet result = null;
+		JSONArray returnResult = null;
+		
+		try {
+			// Get a connection from the pool
+			conn = establishConnection();
+			String query = "Select * from tbl_discussion where dis_id="
+					+ Integer.parseInt((String) request.getParameter("id"));
+
+			stmt = conn.createStatement();
+			result = stmt.executeQuery(query);
+		} catch (SQLException ex) {
+			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			// ex.printStackTrace();
+		} finally {
+			try {
+				returnResult = ResultSetConverter.convert(result);
+				int userId = searchUserByUserName().getJSONObject(0).getInt("id");
+				int voteType = checkVote(Integer.parseInt((String) request.getParameter("id")),userId);
+				if (returnResult != null) {
+					for (int i = 0; i < returnResult.length(); i++) {
+						JSONObject rec = returnResult.getJSONObject(i);
+						request.setAttribute("title", rec.get("dis_title"));
+						request.setAttribute("descreption", rec.get("dis_descreption"));
+						request.setAttribute("endTime", rec.get("dis_endDate"));
+						request.setAttribute("id", rec.get("dis_id"));
+					}
+				}
+				request.setAttribute("voteType", voteType);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close(); // return to pool
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		// return returnResult;
+		getServletContext().getRequestDispatcher("/view/displayGroup.jsp").forward(request, response);
 	}
 
 	public JSONArray searchEmail(HttpServletRequest request, HttpServletResponse response)
@@ -191,7 +252,7 @@ public class Group extends HttpServlet {
 		Connection conn = null;
 		Statement stmt = null;
 		@SuppressWarnings("unused")
-		int result=0;
+		int result = 0;
 		try {
 			conn = establishConnection();
 			int creatorId = 0;
@@ -212,7 +273,8 @@ public class Group extends HttpServlet {
 				if (((String) request.getParameter("participants")).contains(",")) {
 					participants = ((String) request.getParameter("participants")).split(",");
 				} else {
-					participants[0] = (String) request.getParameter("participants");
+					participants = new String[1];
+					participants[0] =(String) request.getParameter("participants");
 				}
 				for (String participant : participants) {
 					Connection connStmt = establishConnection();
@@ -221,6 +283,9 @@ public class Group extends HttpServlet {
 					try {
 						partStmt = connStmt.createStatement();
 						result = partStmt.executeUpdate(queryParticipants);
+						if(result>0){
+							sendEmailToParticipants(participant,request);
+						}
 					} catch (SQLException ex) {
 						request.setAttribute("errorMessage", "Something went wrong!!!!");
 					} finally {
@@ -276,7 +341,7 @@ public class Group extends HttpServlet {
 	}
 
 	public JSONArray searchUserByUserName() throws SQLException {
-		Connection conn = pool.getConnection();
+		Connection conn = establishConnection();
 		Statement stmt = conn.createStatement();
 		Subject currentUser = SecurityUtils.getSubject();
 		String query = "Select id,email from tbl_user where userName like '" + currentUser.getPrincipal() + "'";
@@ -289,4 +354,64 @@ public class Group extends HttpServlet {
 
 	}
 
+	public void countVote(HttpServletRequest request,HttpServletResponse response) throws SQLException, IOException{
+		Connection conn = pool.getConnection();
+		Statement stmt = conn.createStatement();
+		String query = "Select count(id) as voteCount,vote_type from tbl_vote where dis_id = '" + Integer.parseInt(request.getParameter("id")) + "' group by vote_type";
+		ResultSet result = stmt.executeQuery(query);
+		JSONArray returnResult = ResultSetConverter.convert(result);
+		stmt.close();
+		conn.close();
+		
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		out.print(returnResult);
+		out.flush();
+
+	}
+
+	public int checkVote(int disId,int userId) throws SQLException{
+		Connection conn = pool.getConnection();
+		Statement stmt = conn.createStatement();
+		String query = "Select * from tbl_vote where dis_id = '" + disId + "' and userId="+userId;
+		ResultSet result = stmt.executeQuery(query);
+		int voteType = 0;
+		if(result.next()) voteType = result.getInt("vote_type");
+		stmt.close();
+		conn.close();
+		return voteType;
+	}
+
+	public void sendEmailToParticipants(String participant,HttpServletRequest request){
+			final String username = "creedsushil2@gmail.com";
+			final String password = "webdesign@123";
+			boolean mailSent = false;
+			Properties props = new Properties();
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.port", "587");
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+			try {
+
+				Message message = new MimeMessage(session);
+				message.setFrom(new InternetAddress("creedsushil2@gmail.com"));
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant));
+				message.setSubject("You are added to the disscussion in GDSS");
+				message.setText("Please click the link below:\n\n" + request.getRequestURL());
+
+				Transport.send(message);
+				mailSent = true;
+
+			} catch (MessagingException e) {
+				mailSent = false;
+				throw new RuntimeException(e);
+			}
+			
+	}
+	
 }

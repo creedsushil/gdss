@@ -34,7 +34,7 @@ tr {
 	min-width: 430px;
 }
 
-.pointed{
+.pointed {
 	background-color: #cfcccc;
 }
 
@@ -152,6 +152,10 @@ fieldset form input.formbutton {
 
 h1 {
 	font-size: 2.4em;
+	border-radius: 5px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
 }
 
 h2 {
@@ -391,4 +395,89 @@ footer p a:hover {
 		margin-top: 0;
 		padding: 1em;
 	}
+}
+
+.description {
+	text-align: left;
+	margin-bottom: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 20px;
+	border-radius: 5px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	background: rgba(7, 130, 193, 0.19);
+}
+
+.comment {
+	border: 1px solid #dcdcdc;
+	text-align: left;
+	font-size: 15px;
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 20px;
+	border-radius: 5px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	background: rgba(109, 25, 25, 0.11);
+	text-align: left;
+}
+
+.voteUp {
+	border-radius:5px;
+	border: 3px solid #0fde0f;
+	cursor: pointer;
+}
+
+.voteMayBe {
+	border-radius:5px;
+	border: 3px solid #c9d41c;
+	cursor: pointer;
+}
+
+.voteMayBeNot {
+	border-radius:5px;
+	border: 3px solid #e6a719;
+	cursor: pointer;
+}
+
+.voteDown {
+	border-radius:5px;
+	border: 3px solid #ec0c2b;
+	cursor: pointer;
+}
+
+.voted_1{
+	background: #0fde0f;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: #1f5f25 0px 8px 9px;
+}
+
+.voted_2{
+	background: #c9d41c;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: #1f5f25 0px 8px 9px;
+}
+
+.voted_3{
+	background: #e6a719;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: #1f5f25 0px 8px 9px;
+}
+
+.voted_4{
+	background: #ec0c2b;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+	box-shadow: #1f5f25 0px 8px 9px;
+}
+.voteCount{
+	
+    font-size: 12px;
+	
 }

@@ -93,10 +93,6 @@
 	});
 	
 	
-		function loadDiscussion() {
-			console.log("NOT IMPLEMENTED");
-		}
-
 		function mousePointed(event) {
 			event.target.parentElement.setAttribute("class", "pointed");
 		}

@@ -5,10 +5,10 @@
 <div class="card" style="display: none;"></div>
 <div class="card">
 	<div class="toggle"></div>
-	<c:if test="${not empty errorMessage}">
-		<h2 class="error" id="registerError" style="color: black;">${errorMessage}</h2>
+	<c:if test="${not empty message}">
+		<h2 class="error" id="registerError" style="color: red;">${message}</h2>
 	</c:if>
-	<form action="Register" method="POST">
+	<form action="settings" id="setting" method="POST">
 		<div id="image" style="">
 			<input type="file" id="pp" name="profilePic" style="display: none;" />
 			<label id="defImage"
@@ -16,30 +16,31 @@
 				class="fa fa-user" style="font-size: 100px;" aria-hidden="true"></i></label>
 		</div>
 		<div class="input-container">
-			<input type="email" id="#{label}" required="required" name="email" />
-			<label for="#{label}">Email</label>
+		<label for="#{label}" class="label">Email</label>
+			<input type="email" id="#{label}" required="required" value="${email }" style="color:lightblue;" readonly="readonly"/>
 			<div class="bar"></div>
 		</div>
 		<div class="input-container">
+		 <label
+				for="#{label}" class="label">Username</label>
 			<input type="text" id="#{label}" required="required"
-				style="text-transform: uppercase;" name="username" /> <label
-				for="#{label}">Username</label>
+				style="text-transform: uppercase;color:lightblue;" value="${username }" readonly="readonly"/>
 			<div class="bar"></div>
 		</div>
 
 		<div class="input-container">
-			<input type="password" id="#{label}" required="required"
+			<input type="password" id="#{label}" required="required" value="${password }"
 				name="password" /> <label for="#{label}">Password</label>
 			<div class="bar"></div>
 		</div>
 		<div class="input-container">
-			<input type="password" id="passwordre" required="required" /> <label
+			<input type="password" id="passwordre" required="required" value="${password }"/> <label
 				for="#{label}">Repeat Password</label>
 			<div class="bar"></div>
 		</div>
-		<div class="button-container">
-			<button>
-				<span>Next</span>
+		<div class="button-container" onclick="submitForm();">
+			<button disabled="disabled">
+				<span>Update</span>
 			</button>
 		</div>
 	</form>
@@ -52,4 +53,19 @@
 			$('#pp').click();
 		});
 	});
+	
+	function submitForm(){
+		$.ajax({
+			url : "settings",
+			type : "POST",
+			data : $("#setting").serialize(),
+			success : function(resp) {
+				$("#main").html(resp);
+			},
+			error:function(){
+				
+			}
+		});
+	}
+	
 </script>

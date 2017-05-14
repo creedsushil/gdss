@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page isELIgnored="false"%>
-<h1 class="title">Your groups</h1>
+<h1 class="title">Groups You Are Participated</h1>
 <table>
 	<thead>
 		<th>Name</th>
@@ -11,8 +11,12 @@
 		<%-- ${currentGroup } --%>
 		<c:forEach begin="0" end="${currentGroup.length() -1}" var="item">
 			<tr>
+			<form id="tdForm_${currentGroup.getJSONObject(item).get('dis_id')}" action="<%=request.getContextPath()%>/group?page=groupWithId&&id=${currentGroup.getJSONObject(item).get('dis_id')}" method="POST">
+				<input type="hidden" name="id" value="${currentGroup.getJSONObject(item).get('dis_id')}"/>
+				<input type="hidden" id="page" name="page" value="groupWithId"/>
+				</form>
 				<td>${item +1 }</td>
-				<td class="tdTitle" onclick="loadDiscussion();" onmouseover="mousePointed(event);" onmouseout="mouseRemoved(event);">${currentGroup.getJSONObject(item).getString("dis_title")}</td>
+				<td class="tdTitle" onclick="loadDiscussion(${currentGroup.getJSONObject(item).get('dis_id')});" onmouseover="mousePointed(event);" onmouseout="mouseRemoved(event);">${currentGroup.getJSONObject(item).getString("dis_title")}</td>
 				<td class="timer" id="${item}" style="display: none;">${currentGroup.getJSONObject(item).get("dis_endDate")}</td>
 				<td id="timer_${item}" style="min-width: 157px"></td>
 			</tr>
@@ -57,6 +61,16 @@ function setTimer(){
 		    
 		    // If the count down is over, write some text 
 	}
+	
+	function loadDiscussion(id) {
+		debugger;
+		console.log($("#page").val());
+		if($("#page").val()==null){
+			return false;
+		}
+		$("#tdForm_"+id).submit();
+	}
+	
 </script>
 
 
