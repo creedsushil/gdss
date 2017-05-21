@@ -1,6 +1,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page isELIgnored="false"%>
 <h1 class="title">Groups You Are Participated</h1>
+
+
+<button class="topButton">
+	<span> Open </span> <input type="checkbox" id="open" checked="checked"
+		onclick="filterList('open')" />
+</button>
+
+<button class="topButton">
+	<span> Closed </span> <input type="checkbox" id="closed"
+		checked="checked" onclick="filterList('closed')" />
+</button>
+
 <table>
 	<thead>
 		<th>Name</th>
@@ -57,6 +69,10 @@ function setTimer(){
 		    var distance = date - now;
 		    if (distance < 0 || isNaN(distance)) {
 		    	document.getElementById("timer_"+data.id).innerHTML = "00:00:00";
+		    	$("#timer_"+data.id).addClass("closed");
+		    	if(!$("#closed:checked").attr("checked")){
+		    		$(".closed").parent().hide();
+		    	}
 		    	return false;
 		    }
 		    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -65,13 +81,13 @@ function setTimer(){
 		    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 		    document.getElementById("timer_"+data.id).innerHTML = days + "d " + hours + "h "
 		    + minutes + "m " + seconds + "s ";
-		    
-		    // If the count down is over, write some text 
+		    $("#timer_"+data.id).addClass("open");
+		    if(!$("#open:checked").attr("checked")){
+	    		$(".open").parent().hide();
+	    	}
 	}
 	
 	function loadDiscussion(id) {
-		debugger;
-		console.log($("#page").val());
 		if($("#page").val()==null){
 			return false;
 		}

@@ -138,6 +138,26 @@
 			}
 		});
 		
+		function filterList(clicked){
+			var checked = $("#"+clicked+":checked").attr("checked");
+			if(clicked=="open"){
+				var open = $(".open");
+				if(checked!=undefined){
+					$(".open").parent().show();
+				}else{
+					$(".open").parent().hide();
+				}
+				
+			}else{
+				var closed = $(".closed");
+				if(checked!=undefined){
+					$(".closed").parent().show();
+				}else{
+					$(".closed").parent().hide();
+				}
+			}
+		}
+		
 	</script>
 
 </body>

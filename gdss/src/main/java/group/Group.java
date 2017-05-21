@@ -77,7 +77,9 @@ public class Group extends HttpServlet {
 		String pageData = (String) request.getParameter("page");
 		if (pageData.equals("createGroup")) {
 			createGroup(request, response);
-		} else if (pageData.equals("search")) {
+		} else if (pageData.equals("updateGroup")) {
+			updateGroup(request, response);
+		}else if (pageData.equals("search")) {
 			response.setContentType("application/json");
 			PrintWriter out = response.getWriter();
 			out.print(searchEmail(request, response));
@@ -131,9 +133,26 @@ public class Group extends HttpServlet {
 				out.print("Cannot Create Group!!");
 			}
 		} else {
+			request.setAttribute("create", true);
 			getServletContext().getRequestDispatcher("/view/createGroup.jsp").forward(request, response);
 		}
 
+	}
+	
+	public void updateGroup(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+			boolean saved = updateAndSaveGroup(request, response);
+			if (saved) {
+				PrintWriter out = response.getWriter();
+				out.print("success");
+			} else {
+				// request.setAttribute("errorMessage", "Cannot create
+				// group!!");
+				PrintWriter out = response.getWriter();
+				out.print("Cannot Create Group!!");
+			}
+		
 	}
 
 	public void groupWithId(HttpServletRequest request, HttpServletResponse response)
@@ -142,7 +161,9 @@ public class Group extends HttpServlet {
 		Statement stmt = null;
 		ResultSet result = null;
 		JSONArray returnResult = null;
-		
+		int userId = 0;
+		int creatorId = 0;
+		Object date=null;
 		try {
 			// Get a connection from the pool
 			conn = establishConnection();
@@ -157,15 +178,17 @@ public class Group extends HttpServlet {
 		} finally {
 			try {
 				returnResult = ResultSetConverter.convert(result);
-				int userId = searchUserByUserName().getJSONObject(0).getInt("id");
+				userId = searchUserByUserName().getJSONObject(0).getInt("id");
 				int voteType = checkVote(Integer.parseInt((String) request.getParameter("id")),userId);
 				if (returnResult != null) {
 					for (int i = 0; i < returnResult.length(); i++) {
 						JSONObject rec = returnResult.getJSONObject(i);
 						request.setAttribute("title", rec.get("dis_title"));
-						request.setAttribute("descreption", rec.get("dis_descreption"));
-						request.setAttribute("endTime", rec.get("dis_endDate"));
+						request.setAttribute("description", rec.get("dis_descreption"));
+						//request.setAttribute("endTime", rec.get("dis_endDate"));
+						date = rec.get("dis_endDate");
 						request.setAttribute("id", rec.get("dis_id"));
+						creatorId = rec.getInt("creator_id");
 					}
 				}
 				request.setAttribute("voteType", voteType);
@@ -185,8 +208,18 @@ public class Group extends HttpServlet {
 				ex.printStackTrace();
 			}
 		}
+		if(userId == creatorId){
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.S");
+	        request.setAttribute("endTime", simpleDateFormat.format(date));	       
+			request.setAttribute("edit", true);
+			getServletContext().getRequestDispatcher("/view/editDiscussion.jsp").forward(request, response);	
+		}
+		else{
+			request.setAttribute("endTime", date);
+			getServletContext().getRequestDispatcher("/view/displayGroup.jsp").forward(request, response);
+		}
 		// return returnResult;
-		getServletContext().getRequestDispatcher("/view/displayGroup.jsp").forward(request, response);
+		
 	}
 
 	public JSONArray searchEmail(HttpServletRequest request, HttpServletResponse response)
@@ -315,6 +348,46 @@ public class Group extends HttpServlet {
 		return groupId > 0;
 	}
 
+	public boolean updateAndSaveGroup(HttpServletRequest request, HttpServletResponse response) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		Timestamp endDate = null;
+		try {
+			endDate = new java.sql.Timestamp((formatter.parse((String) request.getParameter("endTime"))).getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int groupId = 0;
+		Connection conn = null;
+		Statement stmt = null;
+		int result = 0;
+		try {
+			conn = establishConnection();
+			int creatorId = 0;
+			creatorId = searchUserByUserName().getJSONObject(0).getInt("id");
+
+			String query = "update tbl_discussion set dis_title = '" + (String) request.getParameter("title") + "', dis_descreption ='"
+					+ (String) request.getParameter("description") + "', dis_endDate = '" + endDate + "' where dis_id = "+Integer.parseInt(request.getParameter("id"));
+			
+			
+			stmt = conn.createStatement();
+			result = stmt.executeUpdate(query);
+		} catch (SQLException ex) {
+			request.setAttribute("errorMessage", "Something went wrong!!!!");
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close(); // return to pool
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+
+		}
+		return result>0;
+	}
+	
 	public JSONArray getAllGroup(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 		String email = null;
 		try {
@@ -367,7 +440,7 @@ public class Group extends HttpServlet {
 		out.flush();
 
 	}
-
+	
 	public int checkVote(int disId,int userId) throws SQLException{
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();

@@ -3,17 +3,13 @@
 <h1 class="title">All Groups</h1>
 
 <button class="topButton">
-<span>
-Open
-</span>
-<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+	<span> Open </span> <input type="checkbox" id="open" checked="checked"
+		onclick="filterList('open')" />
 </button>
 
 <button class="topButton">
-<span>
-Closed
-</span>
-<i class="fa fa-lock" aria-hidden="true"></i>
+	<span> Closed </span> <input type="checkbox" id="closed"
+		checked="checked" onclick="filterList('closed')" />
 </button>
 
 
@@ -26,18 +22,24 @@ Closed
 	<tbody>
 		<%-- ${currentGroup } --%>
 		<c:if test="${currentGroup.length()>0}">
-		<c:forEach begin="0" end="${currentGroup.length() -1}" var="item">
-			<tr>
-			<form id="tdForm_${currentGroup.getJSONObject(item).get('dis_id')}" action="<%=request.getContextPath()%>/group?page=groupWithId&&id=${currentGroup.getJSONObject(item).get('dis_id')}" method="POST">
-				<input type="hidden" name="id" value="${currentGroup.getJSONObject(item).get('dis_id')}"/>
-				<input type="hidden" id="page" name="page" value="groupWithId"/>
-				</form>
-				<td>${item +1 }</td>
-				<td class="tdTitle" onclick="loadDiscussion(${currentGroup.getJSONObject(item).get('dis_id')});" onmouseover="mousePointed(event);" onmouseout="mouseRemoved(event);">${currentGroup.getJSONObject(item).getString("dis_title")}</td>
-				<td class="timer" id="${item}" style="display: none;">${currentGroup.getJSONObject(item).get("dis_endDate")}</td>
-				<td id="timer_${item}" style="min-width: 157px"></td>
-			</tr>
-		</c:forEach>
+			<c:forEach begin="0" end="${currentGroup.length() -1}" var="item">
+				<tr>
+					<form id="tdForm_${currentGroup.getJSONObject(item).get('dis_id')}"
+						action="<%=request.getContextPath()%>/group?page=groupWithId&&id=${currentGroup.getJSONObject(item).get('dis_id')}"
+						method="POST">
+						<input type="hidden" name="id"
+							value="${currentGroup.getJSONObject(item).get('dis_id')}" /> <input
+							type="hidden" id="page" name="page" value="groupWithId" />
+					</form>
+					<td>${item +1 }</td>
+					<td class="tdTitle"
+						onclick="loadDiscussion(${currentGroup.getJSONObject(item).get('dis_id')});"
+						onmouseover="mousePointed(event);"
+						onmouseout="mouseRemoved(event);">${currentGroup.getJSONObject(item).getString("dis_title")}</td>
+					<td class="timer" id="${item}" style="display: none;">${currentGroup.getJSONObject(item).get("dis_endDate")}</td>
+					<td id="timer_${item}" style="min-width: 157px;" class="timerCheck"></td>
+				</tr>
+			</c:forEach>
 		</c:if>
 
 	</tbody>
@@ -68,6 +70,11 @@ function setTimer(){
 		    var distance = date - now;
 		    if (distance < 0 || isNaN(distance)) {
 		    	document.getElementById("timer_"+data.id).innerHTML = "00:00:00";
+		    	//document.getElementById("timer_"+data.id).addClass("closed");
+		    	$("#timer_"+data.id).addClass("closed");
+		    	if(!$("#closed:checked").attr("checked")){
+		    		$(".closed").parent().hide();
+		    	}		    	
 		    	return false;
 		    }
 		    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -76,14 +83,15 @@ function setTimer(){
 		    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 		    document.getElementById("timer_"+data.id).innerHTML = days + "d " + hours + "h "
 		    + minutes + "m " + seconds + "s ";
-		    
-		    // If the count down is over, write some text 
+		    //document.getElementById("timer_"+data.id).addClass("open");
+		    $("#timer_"+data.id).addClass("open");
+		    if(!$("#open:checked").attr("checked")){
+	    		$(".open").parent().hide();
+	    	}
 	}
 	
 	
 	function loadDiscussion(id) {
-		debugger;
-		console.log($("#tdForm_"+id));
 		document.location.hash = "";
 		if($("#page").val()==null){
 			return false;

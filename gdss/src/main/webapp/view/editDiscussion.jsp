@@ -3,7 +3,6 @@
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <html>
 <head>
@@ -33,9 +32,7 @@
 <body>
 
 	<section id="body" class="width"> <aside id="sidebar"
-		class="column-left"> <header> <img
-		src="<%=request.getContextPath()%>/image/5840eb5b-7a9e-417c-8b61-6311c1c4575e_angry-wolf-pictures-pretty"
-		alt="Profile_Pic" />
+		class="column-left"> <header> <!-- <img src="images/40fdf46e-dfba-4b17-8271-badcb4bafbcc_1a962197d9133cace9facf1037ffe4b1.jpg" alt="Profile_Pic"/> -->
 	<h1>
 		<a href="#" style="text-transform: uppercase;">${userName}</a>
 	</h1>
@@ -51,47 +48,49 @@
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
-	<div class="container" style="max-width: 700px; margin: 0 0 0 0;">
+	<div class="container"
+		style="max-width: 65%; margin: 0 0 0 0; float: left;">
 		<div class="card" style="display: none;"></div>
 		<div class="card" style="padding: 0 !important;">
 			<div id="main">
-				<h1 class="title">${title }
-					<span id="timer" style="float: right;"></span> <input type="hidden"
-						id="time" value="${endTime }">
-				</h1>
-				<div class="description">${description }
-					<br /> <br /> <span class="voteCount" id="up">0</span> <i
-						class="fa fa-thumbs-up voteUp" id="voteType_1" aria-hidden="true"
-						onclick="vote(1);" style=""></i> <span class="voteCount"
-						id="mayBe">0</span> <i class="fa fa-hand-o-up voteMayBe"
-						id="voteType_2" aria-hidden="true" onclick="vote(2);" style=""></i>
+				<jsp:include page="createGroup.jsp"></jsp:include>
+				<br /> <br />
 
-					<span class="voteCount" id="mayBeNot">0</span> <i
-						class="fa fa-hand-o-down voteMayBeNot" id="voteType_3"
-						aria-hidden="true" onclick="vote(3);" style=""></i> <span
-						class="voteCount" id="down">0</span> <i
-						class="fa fa-thumbs-down voteDown" id="voteType_4"
-						aria-hidden="true" onclick="vote(4);" style=""></i>
+				<h1 class="title">Participants</h1>
+
+				<div class="participantsContainer"></div>
+				<br />
+				<br /> <label
+					style="left: 20px; position: relative; margin-bottom: 5px;">Add</label>
+
+				<div class="input-container"
+					style="width: 48%; margin: 10px 20px 50px !important;">
+					<input type="text" id="addParticipants" required="required" />
+					<div class="bar"></div>
 				</div>
+				<h1 class="title">Comments</h1>
 				<div id="commentsDiv" style="margin-bottom: 20px;"></div>
-				<div id="commentField">
-					<div class="input-container">
-						<input type="hidden" id="id" value="${id }">
-						<ckeditor:editor basePath="resource/ckeditor" editor="description"
-							value="" />
-						<div class="button-container">
-							<button onclick="comment()" class="button"
-								style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 235px;">
-								<span>Comment</span>
-							</button>
-						</div>
+				<div class="input-container">
+					<ckeditor:editor basePath="resource/ckeditor" editor="comment"
+						value="" />
+					<div class="button-container">
+						<button onclick="comment()" class="button"
+							style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 235px;">
+							<span>Comment</span>
+						</button>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
-
+	<div class="container-right card">
+		<img src="Report?id=${id }&&action='display'" />
+		<div class="button-container">
+			<button onclick="downloadReport(${id})" class="button" style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0;">
+				<span>Download</span>
+			</button>
+		</div>
+	</div>
 	</article> <footer class="clear">
 	<p>&copy; Group decesion support system</p>
 	</footer> </section>
@@ -102,13 +101,10 @@
 	var current = "group";
 	var commentInterval=null;
 	$(function(){
-		var voteType = ${voteType};
-		countVote(voteType);
-		updateComment();
-		commentInterval = setInterval(function(){updateComment();}, 2000);
-		setInterval(function(){ setTimer()
-		 }, 1000)
 		var currentPage = document.location.hash;
+		updateComment();
+		getParticipants();
+		commentInterval = setInterval(function(){updateComment();}, 2000);
 		if(currentPage.includes("#") && currentPage !="home"){
 			$("#main").hide();
 			currentPage = currentPage.split("#")[1];
@@ -119,7 +115,7 @@
 				type : "POST",
 				data : data,
 				success : function(resp) {
-					$("#group").removeClass("selected-item");
+					$("#home").removeClass("selected-item");
 					$("#" + currentPage).addClass("selected-item");
 					current = currentPage;
 					document.location.hash = currentPage;
@@ -132,51 +128,23 @@
 				}
 			});
 		};
+		
+		$("#addParticipants").tokenInput("<%=request.getContextPath()%>/group?page=search", {
+			propertyToSearch : 'email',
+			//preventDuplicates : true,
+			tokenValue : 'email',
+			minChars : 1,
+			noResultsText : "No results",
+			onAdd:function(item){
+				addParticipant(item.email);
+				$("#addParticipants").tokenInput("clear");
+			}
+		});
+		
+		
 	});
 	
-	function setTimer(){
-			var time = (document.getElementById("time").value).split('.')[0];
-			var date = new Date(time).getTime();			
-			
-		var now = new Date().getTime();
-	    
-	    // Find the distance between now an the count down date
-	    var distance = date - now;
-	    if (distance < 0 || isNaN(distance)) {
-	    	$("#voteType_1").removeAttr("onclick");
-	    	$("#voteType_2").removeAttr("onclick");
-	    	$("#voteType_3").removeAttr("onclick");
-	    	$("#voteType_4").removeAttr("onclick");
-	    	$("#commentField").html("");
-	    	document.getElementById("timer").innerHTML = "00:00:00";
-	    	return false;
-	    }
-	    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-	    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-	    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-	    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-	    document.getElementById("timer").innerHTML = days + "d " + hours + "h "
-	    + minutes + "m " + seconds + "s ";
-	    
-	}
 	
-	
-		function loadDiscussion(id) {
-			var data = {id:id};
-			$.ajax({
-				url : "<%=request.getContextPath()%>/group?page=group",
-				type : "POST",
-				data : data,
-				success : function(resp) {					
-					$("#main").html(resp);
-					$("#main").slideDown(600);
-				},
-				error:function(){
-					$("#main").slideDown(600);
-				}
-			}); 
-		}
-
 		function mousePointed(event) {
 			event.target.parentElement.setAttribute("class", "pointed");
 		}
@@ -186,7 +154,6 @@
 		}
 		
 		$(".navBtns").click(function(event) {
-			if(commentInterval != null) clearInterval(commentInterval);
 			var next = event.target.parentElement.getAttribute("id");
 			var data = {page : next == "createGroup"?"createGroup":"getGroup"};
 			var nextPage = next;
@@ -224,7 +191,7 @@
 		});
 
 		function comment() {
-			var comment = CKEDITOR.instances['description'].getData();
+			var comment = CKEDITOR.instances['comment'].getData();
 			if (comment == "" || comment == null) {
 				return false;
 			}
@@ -238,7 +205,7 @@
 				data : data,
 				type : "POST",
 				success : function() {
-					CKEDITOR.instances['description'].setData("");
+					CKEDITOR.instances['comment'].setData("");
 				}
 			});
 		}
@@ -258,7 +225,7 @@
 					if (data == null) {
 						return false;
 					}
-					var divContent = $("#commentsDiv").html();
+					var divContent = "";
 
 					$.each(data, function(index, item) {
 						var newDiv = "<div class='comment'>" + item.comment
@@ -270,71 +237,86 @@
 			});
 		}
 
-		function vote(voteValue) {
+		function getParticipants() {
 			data = {
-				action : "vote",
 				id : $("#id").val(),
-				type : voteValue
-			};
-			$.ajax({
-				url : "comment",
-				data : data,
-				type : "POST",
-				success : function(data) {
+				action : "get"
+			}
+			$
+					.ajax({
+						url : "participants",
+						type : "POST",
+						data : data,
+						success : function(data) {
+							var divItem = "";
+							$
+									.each(
+											data,
+											function(index, item) {
+												divItem = divItem
+														+ "<div class='participants'><span class='partSpan'>"
+														+ item.participant
+														+ "</span><i class='fa fa-times' onclick=deletePart("
+														+ item.id
+														+ ") aria-hidden='true'></i></div>";
+											})
 
-					if (data == true) {
-						countVote(voteValue);
-					}
+							$(".participantsContainer").html(divItem);
 
-				}
-			});
-		}
-
-		function countVote(voted) {
-			var sameVote = $("#voteType_" + voted).hasClass("voted_" + voted);
-			$(".voteUp").removeClass("voted_1");
-			$(".voteMayBe").removeClass("voted_2");
-			$(".voteMayBeNot").removeClass("voted_3");
-			$(".voteDown").removeClass("voted_4");
-
-			if (!sameVote)
-				$("#voteType_" + voted).addClass("voted_" + voted);
-
-			data = {
-				page : "countVote",
-				id : $("#id").val()
-			};
-			$.ajax({
-				url : "group",
-				data : data,
-				type : "POST",
-				success : function(data) {
-					var up = 0;
-					var mayBe = 0;
-					var mayBeNot = 0;
-					var down = 0;
-					$("#up").html(0);
-					$("#mayBe").html(0);
-					$("#mayBeNot").html(0);
-					$("#down").html(0);
-					$.each(data, function(index, item) {
-						if (item.vote_type == "1") {
-							up = item.voteCount;
-							$("#up").html(up);
-						} else if (item.vote_type == "2") {
-							mayBe = item.voteCount;
-							$("#mayBe").html(mayBe);
-						} else if (item.vote_type == "3") {
-							mayBeNot = item.voteCount;
-							$("#mayBeNot").html(mayBeNot);
-						} else if (item.vote_type == "4") {
-							down = item.voteCount;
-							$("#down").html(down);
 						}
+
 					});
-				}
-			});
 		}
+
+		function deletePart(id) {
+			data = {
+				id : id,
+				action : "delete"
+			}
+			$.ajax({
+				url : "participants",
+				type : "POST",
+				data : data,
+				success : function(data) {
+					getParticipants();
+				}
+
+			})
+		}
+
+		function addParticipant(email) {
+			data = {
+				id : $("#id").val(),
+				email : email,
+				action : "add"
+			}
+			$.ajax({
+				url : "participants",
+				type : "POST",
+				data : data,
+				success : function(data) {
+					getParticipants();
+				}
+
+			})
+		}
+		
+		function downloadReport(id){
+			/* var data = {
+					id:id,
+					action:"download"
+			}
+			$.ajax({
+				url:"Report",
+				type:"GET",
+				data:data,
+				success: function(){
+					
+				}
+			}); */
+			window.open("Report?id="+id+"&action=download", '_blank');
+		}
+		
 	</script>
 
 </body>

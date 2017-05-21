@@ -141,6 +141,10 @@ public class DiscussionMethods {
 		String query = "insert into tbl_vote(dis_id,vote_type,userId) values('"
 				+ Integer.parseInt(request.getParameter("id")) + "','" + (String) request.getParameter("type") + "','"
 				+ userId + "')";
+		//voteType 1= like
+		//voteType 2 = modeLike
+		//voteType 3 = modDislike
+		//voteType 4 = dislike
 		stmt.executeUpdate(query);
 		stmt.close();
 		conn.close();
@@ -170,4 +174,7 @@ public class DiscussionMethods {
 		return returnResult;
 	}
 
+	
+	
+	
 }
