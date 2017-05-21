@@ -63,8 +63,7 @@ function setTimer(){
 
 	function displayTimer(data,date){
 		    // Get todays date and time
-		    var now = new Date().getTime();
-		    
+		    var now = new Date().getTime();		    
 		    // Find the distance between now an the count down date
 		    var distance = date - now;
 		    if (distance < 0 || isNaN(distance)) {
