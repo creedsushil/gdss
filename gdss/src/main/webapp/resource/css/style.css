@@ -103,7 +103,7 @@ body {
 	max-width: 460px;
 	width: 100%;
 	margin: 0 auto 100px;
-	float: left;
+	//float: left;
 }
 
 .container.active .card:first-child {

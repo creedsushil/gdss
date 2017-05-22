@@ -51,7 +51,7 @@
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
-	<div class="container" style="max-width: 700px; margin: 0 0 0 0;">
+	<div class="container" style="max-width: 700px; margin: 0 0 0 0;float:left;">
 		<div class="card" style="display: none;"></div>
 		<div class="card" style="padding: 0 !important;">
 			<div id="main">
