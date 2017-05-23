@@ -152,7 +152,7 @@ public class Group extends HttpServlet {
 				// request.setAttribute("errorMessage", "Cannot create
 				// group!!");
 				PrintWriter out = response.getWriter();
-				out.print("Cannot Create Group!!");
+				out.print("Cannot Update Group!!");
 			}
 		
 	}
@@ -351,7 +351,7 @@ public class Group extends HttpServlet {
 	}
 
 	public boolean updateAndSaveGroup(HttpServletRequest request, HttpServletResponse response) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		Timestamp endDate = null;
 		try {
 			endDate = new java.sql.Timestamp((formatter.parse((String) request.getParameter("endTime"))).getTime());
@@ -479,7 +479,8 @@ public class Group extends HttpServlet {
 				Transport.send(message);
 
 			} catch (MessagingException e) {
-				throw new RuntimeException(e);
+				request.setAttribute("errorMessage", "Cannot send email please remove and add user again!!");
+				//throw new RuntimeException(e);
 			}
 			
 	}
