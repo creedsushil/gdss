@@ -28,6 +28,9 @@
 			<c:if test="${not empty errorMessage && empty register}">
 				<h2 class="error">${errorMessage}</h2>
 			</c:if>
+			<c:if test="${not empty successMessage && empty register}">
+				<h2 class="success">${successMessage}</h2>
+			</c:if>
 			<h1 class="title">Login</h1>
 			<form action="login" method="post">
 				<div class="input-container">

@@ -59,6 +59,7 @@ public class PasswordRecovery extends HttpServlet {
 					request.setAttribute("passRecovery", true);
 					getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
 				} else {
+					request.setAttribute("successMessage", "Please check your email for further instruction!!");
 					getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
 				}
 			} else {

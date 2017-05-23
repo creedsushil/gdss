@@ -84,20 +84,20 @@ public class Report extends HttpServlet {
 				JSONObject rec = returnResult.getJSONObject(i);
 				totalCount = totalCount + rec.getInt("voteCount");
 			}
-
-			for (int i = 0; i < returnResult.length(); i++) {
-				JSONObject rec = returnResult.getJSONObject(i);
-				if (rec.getInt("vote_type") == 1) {
-					dataset.setValue("like", rec.getInt("voteCount"));
-				} else if (rec.getInt("vote_type") == 2) {
-					dataset.setValue("Moderate Like", rec.getInt("voteCount"));
-				} else if (rec.getInt("vote_type") == 3) {
-					dataset.setValue("Moderate Dislike", rec.getInt("voteCount"));
-				} else if (rec.getInt("vote_type") == 4) {
-					dataset.setValue("Disike", rec.getInt("voteCount"));
+				for (int i = 0; i < returnResult.length(); i++) {
+					JSONObject rec = returnResult.getJSONObject(i);
+					if (rec.getInt("vote_type") == 1) {
+						dataset.setValue("like", rec.getInt("voteCount"));
+					} else if (rec.getInt("vote_type") == 2) {
+						dataset.setValue("Moderate Like", rec.getInt("voteCount"));
+					} else if (rec.getInt("vote_type") == 3) {
+						dataset.setValue("Moderate Dislike", rec.getInt("voteCount"));
+					} else if (rec.getInt("vote_type") == 4) {
+						dataset.setValue("Disike", rec.getInt("voteCount"));
+					}
 				}
-			}
-		}
+		}else
+			dataset.setValue("No Report Yet", 1);
 		boolean legend = true;
 		boolean tooltips = false;
 		boolean urls = false;
@@ -122,7 +122,8 @@ public class Report extends HttpServlet {
 
 	}
 
-	public static void writeChartToPDF(JFreeChart chart, int width, int height, String fileName,HttpServletResponse response) throws IOException {
+	public static void writeChartToPDF(JFreeChart chart, int width, int height, String fileName,
+			HttpServletResponse response) throws IOException {
 		PdfWriter writer = null;
 
 		Document document = new Document();

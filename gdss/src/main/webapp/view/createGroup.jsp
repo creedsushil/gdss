@@ -1,5 +1,4 @@
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:if test="${create == true}">
 <h1 class="title">Create Discussion</h1>
@@ -22,7 +21,7 @@
 			<%-- <ckeditor:editor basePath="resource/ckeditor" editor="description"/> --%>
 		</div>
 		<div class="input-container">
-			<input type="datetime-local" name="endTime" required="required"
+			<input type="text" id="dateTime" name="endTime" required="required"
 				value="${endTime }" />
 			<div class="bar"></div>
 		</div>
@@ -54,9 +53,14 @@
 
 	</div>
 </form>
-<ckeditor:replace replace="description" basePath="resource/ckeditor" />
 <script>
 	$(function() {		
+		 $('#dateTime').datetimepicker({
+			//format:"yyyy-MM-dd"
+		});
+		
+		CKEDITOR.replace( 'description');
+		
 		$("#participants").tokenInput("<%=request.getContextPath()%>/group?page=search", {
 					propertyToSearch : 'email',
 					//preventDuplicates : true,

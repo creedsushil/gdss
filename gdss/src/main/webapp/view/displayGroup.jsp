@@ -4,11 +4,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Dashboard</title>
+
+<script
+	src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/config.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
+	
+	
+
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
 <link rel='stylesheet prefetch'
@@ -26,6 +35,11 @@
 	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
 	type="text/css" />
+	
+	<script
+	src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
+
+	
 <meta name="viewport"
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 </head>
@@ -33,9 +47,9 @@
 <body>
 
 	<section id="body" class="width"> <aside id="sidebar"
-		class="column-left"> <header> <img
+		class="column-left"> <header><%--  <img
 		src="<%=request.getContextPath()%>/image/5840eb5b-7a9e-417c-8b61-6311c1c4575e_angry-wolf-pictures-pretty"
-		alt="Profile_Pic" />
+		alt="Profile_Pic" /> --%>
 	<h1>
 		<a href="#" style="text-transform: uppercase;">${userName}</a>
 	</h1>
@@ -77,8 +91,9 @@
 				<div id="commentField">
 					<div class="input-container">
 						<input type="hidden" id="id" value="${id }">
-						<ckeditor:editor basePath="resource/ckeditor" editor="description"
-							value="" />
+						<textarea rows="8" cols="10" id="description"></textarea>
+						<%-- <ckeditor:editor basePath="resource/ckeditor" editor="description"
+							value="" /> --%>
 						<div class="button-container">
 							<button onclick="comment()" class="button"
 								style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 235px;">
@@ -97,16 +112,26 @@
 	</footer> </section>
 
 	<div class="clear"></div>
+	<div class="modal"><!-- overlay or cover --></div>
 	</section>
 	<script type="text/javascript">
+	$body = $("body");
+
+	/* $(document).on({
+	    ajaxStart: function() { $body.addClass("loading");    },
+	     ajaxStop: function() { $body.removeClass("loading"); }    
+	}); */
+	
 	var current = "group";
 	var commentInterval=null;
+	var timerInterval = null;
 	$(function(){
+		CKEDITOR.replace( 'description');
 		var voteType = ${voteType};
 		countVote(voteType);
 		updateComment();
 		commentInterval = setInterval(function(){updateComment();}, 2000);
-		setInterval(function(){ setTimer()
+		timerInterval = setInterval(function(){ setTimer()
 		 }, 1000)
 		var currentPage = document.location.hash;
 		if(currentPage.includes("#") && currentPage !="home"){
@@ -114,6 +139,7 @@
 			currentPage = currentPage.split("#")[1];
 			var data = {page : currentPage};
 			var url = "<%=request.getContextPath()%>/" + (currentPage=="createGroup"?"group":currentPage);
+			$body.addClass("loading");
 			$.ajax({
 				url : url,
 				type : "POST",
@@ -126,9 +152,11 @@
 					
 					$("#main").html(resp);
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				},
 				error:function(){
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				}
 			});
 		};
@@ -163,11 +191,13 @@
 	
 		function loadDiscussion(id) {
 			var data = {id:id};
+			$body.addClass("loading");
 			$.ajax({
 				url : "<%=request.getContextPath()%>/group?page=group",
 				type : "POST",
 				data : data,
-				success : function(resp) {					
+				success : function(resp) {	
+					$body.removeClass("loading");
 					$("#main").html(resp);
 					$("#main").slideDown(600);
 				},
@@ -187,6 +217,7 @@
 		
 		$(".navBtns").click(function(event) {
 			if(commentInterval != null) clearInterval(commentInterval);
+			if(timerInterval != null) clearInterval(timerInterval);
 			var next = event.target.parentElement.getAttribute("id");
 			var data = {page : next == "createGroup"?"createGroup":"getGroup"};
 			var nextPage = next;
@@ -202,6 +233,7 @@
 				return false;
 			} else {
 				$("#main").hide();
+				$body.addClass("loading");
 				$.ajax({
 					url : url,
 					type : "POST",
@@ -215,9 +247,11 @@
 						$("#main").html(resp);
 
 						$("#main").slideDown(600);
+						$body.removeClass("loading");
 					},
 					error : function() {
 						$("#main").slideDown(600);
+						$body.removeClass("loading");
 					}
 				});
 			}
@@ -233,12 +267,14 @@
 				id : $("#id").val(),
 				action : "addComment"
 			};
+			$body.addClass("loading");
 			$.ajax({
 				url : "comment",
 				data : data,
 				type : "POST",
 				success : function() {
 					CKEDITOR.instances['description'].setData("");
+					$body.removeClass("loading");
 				}
 			});
 		}
@@ -276,16 +312,17 @@
 				id : $("#id").val(),
 				type : voteValue
 			};
+			$body.addClass("loading");
 			$.ajax({
 				url : "comment",
 				data : data,
 				type : "POST",
 				success : function(data) {
-
+					
 					if (data == true) {
 						countVote(voteValue);
 					}
-
+					$body.removeClass("loading");
 				}
 			});
 		}

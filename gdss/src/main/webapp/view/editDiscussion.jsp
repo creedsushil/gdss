@@ -3,11 +3,17 @@
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Dashboard</title>
+<script
+	src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/config.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
+
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
 <link rel='stylesheet prefetch'
@@ -25,6 +31,12 @@
 	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
 	type="text/css" />
+	
+<script
+	src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
+
+	
+	
 <meta name="viewport"
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 </head>
@@ -61,21 +73,19 @@
 				<div class="participantsContainer"></div>
 				<br />
 				<br /> <label
-					style="left: 20px; position: relative; margin-bottom: 5px;">Add</label>
+					style="left: 20px; position: relative; margin-bottom: 5px;margin-left:35px;">Add</label>
 
 				<div class="input-container"
-					style="width: 48%; margin: 10px 20px 50px !important;">
+					style="width: 48%; margin: 10px 20px 50px 35px !important;">
 					<input type="text" id="addParticipants" required="required" />
 					<div class="bar"></div>
 				</div>
 				<h1 class="title">Comments</h1>
-				<div id="commentsDiv" style="margin-bottom: 20px;"></div>
+				<div id="commentsDiv" style="margin-bottom: 20px;margin-left: 35px;"></div>
 				<div class="input-container">
-					<ckeditor:editor basePath="resource/ckeditor" editor="comment"
-						value="" />
+				<textarea rows="8" cols="11" id="comment"></textarea>
 					<div class="button-container">
-						<button onclick="comment()" class="button"
-							style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 235px;">
+						<button onclick="comment();" class="button" style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 224px;">
 							<span>Comment</span>
 						</button>
 					</div>
@@ -96,20 +106,32 @@
 	</footer> </section>
 
 	<div class="clear"></div>
+	<div class="modal"><!-- overlay or cover --></div>
 	</section>
 	<script type="text/javascript">
+	
+	$body = $("body");
+
+	/* $(document).on({
+	     ajaxStart: function() { $body.addClass("loading");    },
+	     ajaxStop: function() { $body.removeClass("loading"); }    
+	}); */
+	
 	var current = "group";
 	var commentInterval=null;
 	$(function(){
+		CKEDITOR.replace( 'comment');
 		var currentPage = document.location.hash;
 		updateComment();
 		getParticipants();
+		
 		commentInterval = setInterval(function(){updateComment();}, 2000);
 		if(currentPage.includes("#") && currentPage !="home"){
 			$("#main").hide();
 			currentPage = currentPage.split("#")[1];
 			var data = {page : currentPage};
 			var url = "<%=request.getContextPath()%>/" + (currentPage=="createGroup"?"group":currentPage);
+			$body.addClass("loading");
 			$.ajax({
 				url : url,
 				type : "POST",
@@ -122,9 +144,11 @@
 					
 					$("#main").html(resp);
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				},
 				error:function(){
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				}
 			});
 		};
@@ -154,6 +178,7 @@
 		}
 		
 		$(".navBtns").click(function(event) {
+			if(commentInterval != null) clearInterval(commentInterval);
 			var next = event.target.parentElement.getAttribute("id");
 			var data = {page : next == "createGroup"?"createGroup":"getGroup"};
 			var nextPage = next;
@@ -200,12 +225,14 @@
 				id : $("#id").val(),
 				action : "addComment"
 			};
+			$body.addClass("loading");
 			$.ajax({
 				url : "comment",
 				data : data,
 				type : "POST",
 				success : function() {
 					CKEDITOR.instances['comment'].setData("");
+					$body.removeClass("loading");
 				}
 			});
 		}
@@ -242,8 +269,8 @@
 				id : $("#id").val(),
 				action : "get"
 			}
-			$
-					.ajax({
+			$body.addClass("loading");
+			$.ajax({
 						url : "participants",
 						type : "POST",
 						data : data,
@@ -262,7 +289,7 @@
 											})
 
 							$(".participantsContainer").html(divItem);
-
+							$body.removeClass("loading");
 						}
 
 					});
@@ -273,12 +300,15 @@
 				id : id,
 				action : "delete"
 			}
+			$body.addClass("loading");
 			$.ajax({
 				url : "participants",
 				type : "POST",
 				data : data,
 				success : function(data) {
+					$body.removeClass("loading");
 					getParticipants();
+					
 				}
 
 			})
@@ -290,11 +320,13 @@
 				email : email,
 				action : "add"
 			}
+			$body.addClass("loading");
 			$.ajax({
 				url : "participants",
 				type : "POST",
 				data : data,
 				success : function(data) {
+					$body.removeClass("loading");
 					getParticipants();
 				}
 
@@ -302,18 +334,6 @@
 		}
 		
 		function downloadReport(id){
-			/* var data = {
-					id:id,
-					action:"download"
-			}
-			$.ajax({
-				url:"Report",
-				type:"GET",
-				data:data,
-				success: function(){
-					
-				}
-			}); */
 			window.open("Report?id="+id+"&action=download", '_blank');
 		}
 		

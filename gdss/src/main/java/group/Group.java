@@ -75,6 +75,8 @@ public class Group extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pageData = (String) request.getParameter("page");
+		Subject currentUser = SecurityUtils.getSubject();
+		request.setAttribute("userName", currentUser.getPrincipal());
 		if (pageData.equals("createGroup")) {
 			createGroup(request, response);
 		} else if (pageData.equals("updateGroup")) {
@@ -209,7 +211,7 @@ public class Group extends HttpServlet {
 			}
 		}
 		if(userId == creatorId){
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.S");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 	        request.setAttribute("endTime", simpleDateFormat.format(date));	       
 			request.setAttribute("edit", true);
 			getServletContext().getRequestDispatcher("/view/editDiscussion.jsp").forward(request, response);	
@@ -272,7 +274,7 @@ public class Group extends HttpServlet {
 	}
 
 	public boolean saveGroup(HttpServletRequest request, HttpServletResponse response) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		Timestamp endDate = null;
 		try {
 			endDate = new java.sql.Timestamp((formatter.parse((String) request.getParameter("endTime"))).getTime());

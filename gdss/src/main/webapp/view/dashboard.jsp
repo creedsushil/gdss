@@ -3,7 +3,6 @@
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="http://ckeditor.com" prefix="ckeditor"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -18,9 +17,20 @@
 
 <script
 	src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/config.js'></script>
+	<script
+	src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
+	
+	<script
+	src='webjars/datetimepicker/2.3.4/jquery.js'></script>
+<script
+	src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
 
 <script type="text/javascript"
-	src="resource/tokenInput/src/jquery.tokeninput.js"></script>
+	src="resource/tokenInput/src/jquery.tokeninput.js"></script>	
 <link rel="stylesheet" type="text/css"
 	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
@@ -56,7 +66,7 @@
 			</div>
 		</div>
 	</div>
-
+	<div class="modal"><!-- overlay or cover --></div>
 	</article> <footer class="clear">
 	<p>&copy; Group decesion support system</p>
 	</footer> </section>
@@ -65,6 +75,14 @@
 	</section>
 	<script type="text/javascript">
 	var current = "home";
+	
+	$body = $("body");
+
+	$(document).on({
+	    ajaxStart: function() { $body.addClass("loading");    },
+	     ajaxStop: function() { $body.removeClass("loading"); }    
+	});
+	
 	$(function(){
 		var currentPage = document.location.hash;
 		if(currentPage.includes("#") && currentPage !="home"){

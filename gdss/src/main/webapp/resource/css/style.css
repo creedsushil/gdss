@@ -226,6 +226,18 @@ body {
 	text-transform: uppercase;
 }
 
+.card .success {
+	position: relative;
+	z-index: 1;
+	margin: 0 0 35px;
+	padding: 10px 0 10px 50px;
+	color: blue;
+	font-size: 20px;
+	font-weight: 400;
+	text-transform: uppercase;
+}
+
+
 .card .input-container {
 	position: relative;
 	margin: 0 60px 50px;
@@ -342,6 +354,47 @@ body {
 .selectedButton{
 	background : #969595 !important;
 }
+
+.commentBtn {
+	outline: 0;
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	width: 240px;
+	border: 2px solid #e3e3e3;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1;
+	text-transform: uppercase;
+	overflow: hidden;
+	-webkit-transition: .3s ease;
+	transition: .3s ease;
+	background: #338c0c !important;
+	font-size: 15px !important;
+	width: 110px;
+	padding: 6px 0;
+	bottom: 30px;
+	left: 235px;
+}
+
+.downloadBtn {
+	outline: 0;
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	width: 240px;
+	border: 2px solid #e3e3e3;
+	line-height: 1;
+	text-transform: uppercase;
+	overflow: hidden;
+	-webkit-transition: .3s ease;
+	transition: .3s ease;
+	background: #338c0c !important;
+	font-size: 15px !important;
+	width: 110px;
+	padding: 6px 0;
+}
+
 
 .card .button-container button {
 	outline: 0;
@@ -577,4 +630,31 @@ keyframes buttonFadeInUp { 0% {
 	opacity: 0;
 }
 
+}
+
+
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
 }

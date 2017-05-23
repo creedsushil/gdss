@@ -13,7 +13,7 @@
 		checked="checked" onclick="filterList('closed')" />
 </button>
 
-<table>
+<table style="width:100%;">
 	<thead>
 		<th>Name</th>
 		<th>Title</th>
