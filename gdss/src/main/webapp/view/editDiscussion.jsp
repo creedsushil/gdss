@@ -193,12 +193,15 @@
 			if (nextPage == current) {
 				return false;
 			} else {
+				$body.addClass("loading");
 				$("#main").hide();
 				$.ajax({
 					url : url,
 					type : "POST",
 					data : data,
 					success : function(resp) {
+						$(".container-right").html("");
+						$body.removeClass("loading");
 						$("#" + current).removeClass("selected-item");
 						$("#" + nextPage).addClass("selected-item");
 						current = nextPage;
