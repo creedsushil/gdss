@@ -55,6 +55,7 @@
 		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
 				New Group</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
@@ -67,7 +68,22 @@
 		</div>
 	</div>
 	<div class="modal"><!-- overlay or cover --></div>
-	</article> <footer class="clear">
+	</div>
+	</article> 
+	<div class="chatBox">
+		<div class="chatHead">
+			<span class="chatSpan"></span><span
+				style="top: 5px; left: 25px; position: relative;"><i
+				class='fa fa-times' style="position: fixed; cursor: pointer;"
+				onclick="closeChat()"></i></span>
+		</div>
+		<div class="chatBody"></div>
+		<div style="margin-left: 5px;">
+			<textarea class="chatMsg" id="chatMessage" style="resize: none"></textarea>
+			<button class="chatBtn" id="send" onclick="submitChat();">Send</button>
+		</div>
+	</div>
+	<footer class="clear">
 	<p>&copy; Group decesion support system</p>
 	</footer> </section>
 
@@ -78,10 +94,10 @@
 	
 	$body = $("body");
 
-	$(document).on({
+	/* $(document).on({
 	    ajaxStart: function() { $body.addClass("loading");    },
 	     ajaxStop: function() { $body.removeClass("loading"); }    
-	});
+	}); */
 	
 	$(function(){
 		var currentPage = document.location.hash;
@@ -90,6 +106,7 @@
 			currentPage = currentPage.split("#")[1];
 			var data = {page : currentPage};
 			var url = "<%=request.getContextPath()%>/" + (currentPage=="createGroup"?"group":currentPage);
+			$body.addClass("loading");
 			$.ajax({
 				url : url,
 				type : "POST",
@@ -102,9 +119,11 @@
 					
 					$("#main").html(resp);
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				},
 				error:function(){
 					$("#main").slideDown(600);
+					$body.removeClass("loading");
 				}
 			});
 		};
@@ -135,6 +154,7 @@
 				return false;
 			} else {
 				$("#main").hide();
+				$body.addClass("loading");
 				$.ajax({
 					url : url,
 					type : "POST",
@@ -148,15 +168,18 @@
 						$("#main").html(resp);
 
 						$("#main").slideDown(600);
+						$body.removeClass("loading");
 					},
 					error : function() {
 						$("#main").slideDown(600);
+						$body.removeClass("loading");
 					}
 				});
 			}
 		});
 		
 		function filterList(clicked){
+			$body.addClass("loading");
 			var checked = $("#"+clicked+":checked").attr("checked");
 			if(clicked=="open"){
 				var open = $(".open");
@@ -174,6 +197,7 @@
 					$(".closed").parent().hide();
 				}
 			}
+			$body.removeClass("loading");
 		}
 		
 	</script>

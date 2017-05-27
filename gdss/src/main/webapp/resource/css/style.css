@@ -7,7 +7,82 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Pen Title */
+.chatBox {
+	display:none;
+	border-width: 3px;
+	background-color: #cae8ca;
+	border-style: solid;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 999;
+	min-width: 250px;
+	max-width: 250px;
+	min-height: 250px;
+	max-height: 250px;
+}
+
+.chatHead {
+	min-height: 35px;
+	max-width:250px;
+	background: grey;
+	color: white;
+}
+.chatBody{
+	height:175px;
+	overflow-y:scroll;
+}
+.chatSpan {
+	position: relative;
+	top: 5px;
+	left: 5px;
+	overflow: hidden;
+	float: left;
+	width:80%;
+}
+
+.fromMe {
+	float: right;
+	width: 95%;
+	margin: 5px;
+}
+
+.toMe {
+	float: left;
+	width: 95%;
+	margin: 5px;
+}
+
+.admin{
+	    margin-left: 5px;
+    color: #ed2553;
+    float: left;
+    width: 20%;
+}
+
+.me{
+	    margin-right: 5px;
+    color: green;
+    float: left;
+    width: 20%;
+}
+
+.chatBtn{
+    bottom: 8px;
+    position: relative;
+    left: 2px;
+    padding: 3px;
+    background: yellow;
+    font-weight: bold;	
+    cursor:pointer;
+}
+
+.chatMsg{
+	    resize: none;
+    height: 36px;
+    width: 80%;
+}
+
 .pen-title {
 	padding: 50px 0;
 	text-align: center;
@@ -34,7 +109,6 @@ body {
 	text-decoration: none;
 }
 
-/* Rerun */
 .rerun {
 	margin: 0 0 30px;
 	text-align: center;
@@ -102,8 +176,8 @@ body {
 	position: relative;
 	max-width: 460px;
 	width: 100%;
-	margin: 0 auto 100px;
-	//float: left;
+	margin: 0 auto 100px; //
+	float: left;
 }
 
 .container.active .card:first-child {
@@ -237,7 +311,6 @@ body {
 	text-transform: uppercase;
 }
 
-
 .card .input-container {
 	position: relative;
 	margin: 0 60px 50px;
@@ -330,29 +403,27 @@ body {
 	text-align: center;
 }
 
-.topButton{
+.topButton {
 	cursor: pointer;
-    background: grey;
-    color: white;
-    height: 32px;
-    width: 130px;
-    margin: 0px 0 10px 0;
-    font-weight: 800;
-    font-size: 100%;
-
+	background: grey;
+	color: white;
+	height: 32px;
+	width: 130px;
+	margin: 0px 0 10px 0;
+	font-weight: 800;
+	font-size: 100%;
 }
 
-.topButton:hover{
+.topButton:hover {
 	background: #ed2553;
 }
 
-.topButton:active{
+.topButton:active {
 	background: yellow;
 }
 
-
-.selectedButton{
-	background : #969595 !important;
+.selectedButton {
+	background: #969595 !important;
 }
 
 .commentBtn {
@@ -394,7 +465,6 @@ body {
 	width: 110px;
 	padding: 6px 0;
 }
-
 
 .card .button-container button {
 	outline: 0;
@@ -631,30 +701,26 @@ keyframes buttonFadeInUp { 0% {
 }
 
 }
-
-
 .modal {
-    display:    none;
-    position:   fixed;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url('http://i.stack.imgur.com/FhHRx.gif') 
-                50% 50% 
-                no-repeat;
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background: rgba(255, 255, 255, .8)
+		url('http://i.stack.imgur.com/FhHRx.gif') 50% 50% no-repeat;
 }
 
 /* When the body has the loading class, we turn
    the scrollbar off with overflow:hidden */
 body.loading {
-    overflow: hidden;   
+	overflow: hidden;
 }
 
 /* Anytime the body has the loading class, our
    modal element will be visible */
 body.loading .modal {
-    display: block;
+	display: block;
 }

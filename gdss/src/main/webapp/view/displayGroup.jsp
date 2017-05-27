@@ -62,6 +62,7 @@
 		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
 				New Group</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
@@ -113,6 +114,19 @@
 
 	<div class="clear"></div>
 	<div class="modal"><!-- overlay or cover --></div>
+	<div class="chatBox">
+		<div class="chatHead">
+			<span class="chatSpan"></span><span
+				style="top: 5px; left: 25px; position: relative;"><i
+				class='fa fa-times' style="position: fixed; cursor: pointer;"
+				onclick="closeChat()"></i></span>
+		</div>
+		<div class="chatBody"></div>
+		<div style="margin-left: 5px;">
+			<textarea class="chatMsg" id="chatMessage" style="resize: none"></textarea>
+			<button class="chatBtn" id="send" onclick="submitChat();">Send</button>
+		</div>
+	</div>
 	</section>
 	<script type="text/javascript">
 	$body = $("body");
@@ -372,6 +386,134 @@
 				}
 			});
 		}
+		
+		var updateChatInterval = null;
+		var updateSeenInterval = setInterval(function(){updateSeenStatus();}, 10000);
+		function chat(disId,participant,title){
+			if(updateChatInterval!=null) clearInterval(updateChatInterval);
+			$(".chatBox").show();
+			var data = {
+					discussionId : disId,
+					part : participant,
+					action:'chat'
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"GET",
+				data:data,
+				success: function(resp){
+					$(".chatSpan").html(title);
+					$(".chatBody").html(resp);
+					
+					$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					updateChatInterval = setInterval(function(){updateChat()},1000);
+					updateSeenStatus();
+				}
+			});
+			
+		}
+
+		function closeChat(){
+			$('.chatBox').hide();
+			clearInterval(updateChatInterval);
+		}
+
+		function submitChat(){
+			if($("#chatMessage").val()=="" || $("#chatMessage").val() == null || $("#chatMessage").val() == undefined){
+				return false;
+			}
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					message:$("#chatMessage").val(),
+					isByCreator:false
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"POST",
+				data:data,
+				success: function(){
+					$("#chatMessage").val("");
+					updateChat(true);
+				}
+			});
+			
+		}
+
+		function updateChat(sendDown){
+			if(!($("#disId").val() && $("#part").val())){
+				return false;
+			}
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					action:'chat'
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"GET",
+				data:data,
+				success: function(resp){
+					if($(".chatBody").html()!=resp){
+						$(".chatBody").html(resp)
+
+					}	
+					
+					if(sendDown){
+						$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					}
+					
+				}
+			});
+		}
+
+		function mousePointedMes(event) {
+			jQuery(event.target).closest("tr").addClass("pointed");
+		}
+
+		function mouseRemovedMes(event) {
+			jQuery(event.target).closest("tr").removeClass("pointed");
+		}
+
+		function updateSeenStatus(){
+			var data = {
+					action:'updateSeenStatus'
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"GET",
+				data:data,
+				success: function(resp){
+					$("#tBody").html(resp);
+				}
+			});
+		}
+
+		function filterMessageList(clicked){
+			$body.addClass("loading");
+			var checked = $("#"+clicked+":checked").attr("checked");
+			if(clicked=="read"){
+				if(checked!=undefined){
+					$(".read").show();
+				}else{
+					$(".read").hide();
+				}
+				
+			}else{
+				if(checked!=undefined){
+					$(".unread").show();
+				}else{
+					$(".unread").hide();
+				}
+			}
+			$body.removeClass("loading");
+		}
+
+		
 	</script>
 
 </body>

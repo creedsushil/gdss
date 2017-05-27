@@ -15,7 +15,7 @@
 
 <table style="width:100%;">
 	<thead>
-		<th>Name</th>
+		<th>SN</th>
 		<th>Title</th>
 		<th>Time Remaining</th>
 	</thead>

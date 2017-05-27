@@ -7,12 +7,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Dashboard</title>
-<script
-	src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
-	<script
-	src='webjars/ckeditor/4.4.7/standard/config.js'></script>
-	<script
-	src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
+<script src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
+<script src='webjars/ckeditor/4.4.7/standard/config.js'></script>
+<script src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
 
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
@@ -31,12 +28,11 @@
 	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
 	type="text/css" />
-	
-<script
-	src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
 
-	
-	
+<script src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
+
+
+
 <meta name="viewport"
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 </head>
@@ -57,6 +53,7 @@
 		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
 				New Group</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
@@ -71,9 +68,8 @@
 				<h1 class="title">Participants</h1>
 
 				<div class="participantsContainer"></div>
-				<br />
-				<br /> <label
-					style="left: 20px; position: relative; margin-bottom: 5px;margin-left:35px;">Add</label>
+				<br /> <br /> <label
+					style="left: 20px; position: relative; margin-bottom: 5px; margin-left: 35px;">Add</label>
 
 				<div class="input-container"
 					style="width: 48%; margin: 10px 20px 50px 35px !important;">
@@ -81,11 +77,13 @@
 					<div class="bar"></div>
 				</div>
 				<h1 class="title">Comments</h1>
-				<div id="commentsDiv" style="margin-bottom: 20px;margin-left: 35px;"></div>
+				<div id="commentsDiv"
+					style="margin-bottom: 20px; margin-left: 35px;"></div>
 				<div class="input-container">
-				<textarea rows="8" cols="11" id="comment"></textarea>
+					<textarea rows="8" cols="11" id="comment"></textarea>
 					<div class="button-container">
-						<button onclick="comment();" class="button" style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 224px;">
+						<button onclick="comment();" class="button"
+							style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 224px;">
 							<span>Comment</span>
 						</button>
 					</div>
@@ -96,7 +94,8 @@
 	<div class="container-right card">
 		<img src="Report?id=${id }&&action='display'" />
 		<div class="button-container">
-			<button onclick="downloadReport(${id})" class="button" style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0;">
+			<button onclick="downloadReport(${id})" class="button"
+				style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0;">
 				<span>Download</span>
 			</button>
 		</div>
@@ -106,7 +105,24 @@
 	</footer> </section>
 
 	<div class="clear"></div>
-	<div class="modal"><!-- overlay or cover --></div>
+	<div class="modal">
+		<!-- overlay or cover -->
+	</div>
+
+	<div id="chat" class="chatBox">
+		<div class="chatHead">
+			<span class="chatSpan">sherryyang@gmil.com</span><span
+				style="top: 5px; left: 25px; position: relative;"><i
+				class='fa fa-times' style="position: fixed; cursor: pointer;"
+				onclick="closeChat()"></i></span>
+		</div>
+		<div class="chatBody"></div>
+		<div style="margin-left: 5px;">
+			<textarea class="chatMsg" id="chatMessage" style="resize: none"></textarea>
+			<button class="chatBtn" id="send" onclick="submitChat();">Send</button>
+		</div>
+	</div>
+
 	</section>
 	<script type="text/javascript">
 	
@@ -119,12 +135,13 @@
 	
 	var current = "group";
 	var commentInterval=null;
+	var seenInterval = null;
 	$(function(){
 		CKEDITOR.replace( 'comment');
 		var currentPage = document.location.hash;
 		updateComment();
 		getParticipants();
-		
+		seenInterval = setInterval(function(){updateSeenStatus();}, 2000);
 		commentInterval = setInterval(function(){updateComment();}, 2000);
 		if(currentPage.includes("#") && currentPage !="home"){
 			$("#main").hide();
@@ -279,17 +296,33 @@
 						data : data,
 						success : function(data) {
 							var divItem = "";
-							$
-									.each(
+							$.each(
 											data,
 											function(index, item) {
+												if(item.isSeen>0){
 												divItem = divItem
-														+ "<div class='participants'><span class='partSpan'>"
+														+ "<div class='participants'><span class='partSpan'onclick=chat('"+ 
+														item.participant
+														+"')>"
 														+ item.participant
 														+ "</span><i class='fa fa-times' onclick=deletePart("
 														+ item.id
-														+ ") aria-hidden='true'></i></div>";
-											})
+														+ ") aria-hidden='true'></i><span style='color:red' id='seen_"+item.id+"'>"+
+														item.isSeen
+														+
+														"</span></div>";
+												}
+												else{
+													divItem = divItem
+													+ "<div class='participants'><span class='partSpan'onclick=chat('"+ 
+													item.participant
+													+"')>"
+													+ item.participant
+													+ "</span><i class='fa fa-times' onclick=deletePart("
+													+ item.id
+													+ ") aria-hidden='true'></i><span style='color:red' id='seen_"+item.id+"'></span></div>";
+											}
+											});
 
 							$(".participantsContainer").html(divItem);
 							$body.removeClass("loading");
@@ -340,6 +373,117 @@
 			window.open("Report?id="+id+"&action=download", '_blank');
 		}
 		
+		
+		
+		var updateChatInterval = null;
+		function chat(participant){
+			if(updateChatInterval!=null) clearInterval(updateChatInterval);
+			$(".chatBox").show();
+			var disId = $("#id").val();
+			var data = {
+					discussionId : disId,
+					part : participant,
+					action:'edit'
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"GET",
+				data:data,
+				success: function(resp){
+					$(".chatSpan").text(participant);
+					$(".chatBody").html(resp);					
+					$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					updateChatInterval = setInterval(function(){updateChat()},1000);
+					updateSeenStatus();
+				}
+			});
+			
+		}
+		
+		function closeChat(){
+			clearInterval(updateChatInterval);
+			$('.chatBox').hide();
+			
+		}
+		
+		function submitChat(){
+			if($("#chatMessage").val()=="" || $("#chatMessage").val() == null || $("#chatMessage").val() == undefined){
+				return false;
+			}
+			
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					message:$("#chatMessage").val(),
+					isByCreator:"true"
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"POST",
+				data:data,
+				success: function(){
+					$("#chatMessage").val("");
+					updateChat(true);
+				}
+			});
+			
+		}
+		
+		
+		function updateChat(sendDown){
+			if(!($("#disId").val() && $("#part").val())){
+				return false;
+			}
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					action:'edit'
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"GET",
+				data:data,
+				success: function(resp){
+					if($(".chatBody").html()!=resp){
+						$(".chatBody").html(resp)
+
+					}	
+					
+					if(sendDown){
+						$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					}
+					
+				}
+			});
+		}
+		
+		
+		function updateSeenStatus(){
+			data = {
+					id : $("#id").val(),
+					action : "get"
+				}
+				$.ajax({
+							url : "participants",
+							type : "POST",
+							data : data,
+							success : function(data) {
+								var divItem = "";
+								$.each(
+												data,
+												function(index, item) {
+													if(item.isSeen>0)
+													$("#seen_"+item.id).html(item.isSeen);
+													else
+														$("#seen_"+item.id).html("");
+												});
+							}
+
+						});
+		}
 	</script>
 
 </body>

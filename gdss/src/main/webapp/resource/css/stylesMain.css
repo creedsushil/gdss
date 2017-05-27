@@ -501,6 +501,7 @@ footer p a:hover {
 
 .partSpan {
 	margin: 5px;
+	cursor:pointer;
 }
 
 .container-right {

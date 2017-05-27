@@ -65,9 +65,12 @@ public class PassRecoveryMethods {
 			message.setSubject("Password Recovery form GDSS");
 			message.setText("Please click the link below:\n\n" + request.getRequestURL() + "?token="
 					+ (String) request.getAttribute("token"));
-
-			Transport.send(message);
-			mailSent = true;
+			try{
+				Transport.send(message);	
+				mailSent = true;
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+			}
 
 		} catch (MessagingException e) {
 			mailSent = false;
