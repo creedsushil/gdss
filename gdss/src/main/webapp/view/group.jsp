@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page isELIgnored="false"%>
-<h1 class="title">Groups You Are Participated</h1>
+<h1 class="title">Discussions You Are Participated</h1>
 
 
 <button class="topButton">

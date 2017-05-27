@@ -74,6 +74,7 @@
 	function submitForm(){
 		var value = CKEDITOR.instances['description'].getData();		
 		$("#description").val(value);
+		$body.addClass("loading");
 		$.ajax({
 			url:"group?page=createGroup",
 			type:"POST",
@@ -84,6 +85,7 @@
 					return false;
 				}
 				$("#message").html(data);
+				$body.removeClass("loading");
 			}
 		});
 	}
@@ -91,6 +93,7 @@
 	function submitFormUpdate(){
 		var value = CKEDITOR.instances['description'].getData();		
 		$("#description").val(value);
+		$body.addClass("loading");
 		$.ajax({
 			url:"group?page=updateGroup",
 			type:"POST",
@@ -102,6 +105,7 @@
 					return false;
 				}
 				$("#message").html(data);
+				$body.removeClass("loading");
 			}
 		});
 	}

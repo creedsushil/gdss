@@ -51,9 +51,9 @@
 	</header> <nav id="mainnav">
 	<ul>
 		<li class="navBtns selected-item" id="home"><a href="#home">Home</a></li>
-		<li class="navBtns" id="group"><a href="#group">My Group</a></li>
+		<li class="navBtns" id="group"><a href="#group">My Discussion</a></li>
 		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
-				New Group</a></li>
+				New Discussion</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
 		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>

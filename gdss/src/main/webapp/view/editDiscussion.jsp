@@ -49,9 +49,9 @@
 	<ul>
 		<li class="navBtns" id="home"><a href="#home">Home</a></li>
 		<li class="navBtns selected-item" id="group"><a href="#group">My
-				Group</a></li>
+				Discussion</a></li>
 		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
-				New Group</a></li>
+				New Discussion</a></li>
 		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
 		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
