@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Setting</title>
+<title>Create</title>
 
 <script src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
 <script src='webjars/ckeditor/4.4.7/standard/config.js'></script>
@@ -47,18 +47,17 @@
 		src="<%=request.getContextPath()%>/image/5840eb5b-7a9e-417c-8b61-6311c1c4575e_angry-wolf-pictures-pretty"
 		alt="Profile_Pic" /> --%>
 	<h1>
-		<a href="#" style="text-transform: uppercase;">${username}</a>
+		<a href="#" style="text-transform: uppercase;">${userName}</a>
 	</h1>
 
 	</header> <nav id="mainnav">
 	<ul>
-		<li class="navBtns" id="home"><a
-			href="<%=request.getContextPath()%>/index">Home</a></li>
+		<li class="navBtns" id="home"><a href="<%=request.getContextPath()%>/index">Home</a></li>
 		<li class="navBtns" id="group"><a href="group?page=getGroup">My
 				Discussion</a></li>
-		<li class="navBtns" id="createGroup"><a
-			href="group?page=createGroup">Create New Discussion</a></li>
-		<li class="navBtns selected-item" id="settings"><a href="">Settings</a></li>
+		<li class="navBtns selected-item" id="createGroup"><a>Create
+				New Discussion</a></li>
+		<li class="navBtns" id="settings"><a href="<%=request.getContextPath()%>/settings">Settings</a></li>
 		<li class="navBtns" id="chat"><a href="<%=request.getContextPath()%>/chat?action=list">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
@@ -67,56 +66,10 @@
 		style="max-width: 700px; margin: 0 0 0 0; float: left;">
 		<div class="card" style="display: none;"></div>
 		<div class="card" style="padding: 0 !important;">
-			<h1 class="title">Setting</h1>
-			<div class="card" style="display: none;"></div>
-			<div class="card">
-				<div>
-					<div class="toggle"></div>
-					<c:if test="${not empty message}">
-						<h2 class="error" id="registerError" style="color: red;">${message}</h2>
-					</c:if>
-					<form action="settings" id="setting" method="POST">
-						<div id="image" style="">
-							<input type="file" id="pp" name="profilePic"
-								style="display: none;" /> <label id="defImage"
-								style="color: #6fab4f; background-color: #fbbec9; position: relative; left: 160px;"><i
-								class="fa fa-user" style="font-size: 100px;" aria-hidden="true"></i></label>
-						</div>
-						<div class="input-container">
-							<label for="#{label}" class="label">Email</label> <input
-								type="email" id="#{label}" required="required" value="${email }"
-								style="color: lightblue;" readonly="readonly" />
-							<div class="bar"></div>
-						</div>
-						<div class="input-container">
-							<label for="#{label}" class="label">Username</label> <input
-								type="text" id="#{label}" required="required"
-								style="text-transform: uppercase; color: lightblue;"
-								value="${username }" readonly="readonly" />
-							<div class="bar"></div>
-						</div>
-
-						<div class="input-container">
-							<input type="password" id="#{label}" required="required"
-								value="${password }" name="password" /> <label for="#{label}">Password</label>
-							<div class="bar"></div>
-						</div>
-						<div class="input-container">
-							<input type="password" id="passwordre" required="required"
-								value="${password }" /> <label for="#{label}">Repeat
-								Password</label>
-							<div class="bar"></div>
-						</div>
-						<div class="button-container" onclick="submitForm();">
-							<button disabled="disabled">
-								<span>Update</span>
-							</button>
-						</div>
-					</form>
-				</div>
+			<div id="main">
+				<jsp:include page="createGroup.jsp"></jsp:include>
 			</div>
 		</div>
-	</div>
 	</div>
 
 	</article> <footer class="clear">
@@ -141,28 +94,6 @@
 		</div>
 	</div>
 	</section>
-	<script type="text/javascript" src="resource/js/index.js"></script>
-	<script type="text/javascript">
-		$(function() {
-			$('#defImage').click(function(e) {
-				e.preventDefault();
-				$('#pp').click();
-			});
-		});
 
-		function submitForm() {
-			$.ajax({
-				url : "settings",
-				type : "POST",
-				data : $("#setting").serialize(),
-				success : function(resp) {
-					$("#main").html(resp);
-				},
-				error : function() {
-
-				}
-			});
-		}
-	</script>
 </body>
 </html>

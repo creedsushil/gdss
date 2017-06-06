@@ -51,11 +51,11 @@
 	</header> <nav id="mainnav">
 	<ul>
 		<li class="navBtns selected-item" id="home"><a href="#home">Home</a></li>
-		<li class="navBtns" id="group"><a href="#group">My Discussion</a></li>
-		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
+		<li class="navBtns" id="group"><a href="group?page=getGroup">My Discussion</a></li>
+		<li class="navBtns" id="createGroup"><a href="group?page=createGroup">Create
 				New Discussion</a></li>
-		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
-		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
+		<li class="navBtns" id="settings"><a href="<%=request.getContextPath()%>/settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="<%=request.getContextPath()%>/chat?action=list">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
@@ -138,7 +138,7 @@
 			event.target.parentElement.removeAttribute("class");
 		}
 		
-		$(".navBtns").click(function(event) {
+		<%-- $(".navBtns").click(function(event) {
 			var next = event.target.parentElement.getAttribute("id");
 			var data = {page : next == "createGroup"?"createGroup":"getGroup"};
 			var nextPage = next;
@@ -177,7 +177,7 @@
 				});
 			}
 		});
-		
+		 --%>
 		function filterList(clicked){
 			$body.addClass("loading");
 			var checked = $("#"+clicked+":checked").attr("checked");

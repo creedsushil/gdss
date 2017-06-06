@@ -93,7 +93,7 @@ public class Participants extends HttpServlet {
 			// Get a connection from the pool
 			conn = pool.getConnection();
 			//Select (select COUNT(*) FROM tbl_chat where part = tbl_participants.participant and isByCreator = 0 and isSeen = 0) as isSeen,tbl_participants.participant,tbl_participants.groupId from tbl_participants inner join tbl_chat on tbl_chat.dis_id = tbl_participants.groupId where tbl_participants.groupId = "+id+" GROUP BY tbl_participants.participant
-			String query = "Select (select COUNT(*) FROM tbl_chat where part = tbl_participants.participant and isByCreator = 0 and isSeen = 0) as isSeen,tbl_participants.participant,tbl_participants.id,tbl_participants.groupId from tbl_participants left join tbl_chat on tbl_chat.dis_id = tbl_participants.groupId where tbl_participants.groupId = "+id+" GROUP BY tbl_participants.participant";
+			String query = "Select (select COUNT(*) FROM tbl_chat where part = tbl_participants.participant and isByCreator = 0 and isSeen = 0) as isSeen,tbl_participants.participant,tbl_participants.id,tbl_participants.groupId from tbl_participants left join tbl_chat on tbl_chat.dis_id = tbl_participants.groupId where tbl_participants.groupId = "+id+" and tbl_participants.isRemoved = 0 GROUP BY tbl_participants.participant";
 
 			stmt = conn.createStatement();
 			result = stmt.executeQuery(query);
@@ -129,7 +129,7 @@ public class Participants extends HttpServlet {
 		try {
 			// Get a connection from the pool
 			conn = pool.getConnection();
-			String query = "delete from tbl_participants where id = " + id;
+			String query = "update tbl_participants set isRemoved = 1 , removedDate = CURRENT_TIMESTAMP where id = " + id;
 
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);

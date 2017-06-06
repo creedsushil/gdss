@@ -820,3 +820,8 @@ footer p a:hover {
 .xdsoft_scroller_box{
 position:relative;
 }
+
+.user{
+	color:rgba(0, 0, 255, 0.58);
+	cursor: pointer;
+}

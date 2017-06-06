@@ -46,10 +46,11 @@ public class DiscussionMethods {
 
 	public boolean addComment(HttpServletRequest request) throws ServletException {
 		Subject currentUser = SecurityUtils.getSubject();
-		String encryptedUserName = org.apache.commons.codec.digest.DigestUtils
-				.sha256Hex((String) currentUser.getPrincipal());
-		String comment = (String) request.getParameter("comment");
 		int disId = Integer.parseInt(request.getParameter("id"));
+		String encryptedUserName = org.apache.commons.codec.digest.DigestUtils
+				.sha256Hex(((String) currentUser.getPrincipal()+disId));
+		String comment = (String) request.getParameter("comment");
+		
 		Connection conn = null;
 		Statement stmt = null;
 		boolean result = false;

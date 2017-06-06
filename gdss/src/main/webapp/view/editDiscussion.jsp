@@ -47,13 +47,13 @@
 
 	</header> <nav id="mainnav">
 	<ul>
-		<li class="navBtns" id="home"><a href="#home">Home</a></li>
-		<li class="navBtns selected-item" id="group"><a href="#group">My
+		<li class="navBtns selected-item" id="home"><a>Home</a></li>
+		<li class="navBtns" id="group"><a href="group?page=getGroup">My
 				Discussion</a></li>
-		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
+		<li class="navBtns" id="createGroup"><a href="group?page=createGroup">Create
 				New Discussion</a></li>
-		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
-		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
+		<li class="navBtns" id="settings"><a href="<%=request.getContextPath()%>/settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="<%=request.getContextPath()%>/chat?action=list">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
@@ -81,6 +81,9 @@
 					style="margin-bottom: 20px; margin-left: 35px;"></div>
 				<div class="input-container">
 					<textarea rows="8" cols="11" id="comment"></textarea>
+					<script>
+			CKEDITOR.replace( 'comment');
+			</script>
 					<div class="button-container">
 						<button onclick="comment();" class="button"
 							style="background: #338c0c !important; font-size: 15px !important; width: 110px; padding: 6px 0; bottom: 30px; left: 224px;">
@@ -137,10 +140,10 @@
 	var commentInterval=null;
 	var seenInterval = null;
 	$(function(){
-		CKEDITOR.replace( 'comment');
 		var currentPage = document.location.hash;
 		updateComment();
 		getParticipants();
+		getAddedContent()
 		seenInterval = setInterval(function(){updateSeenStatus();}, 2000);
 		commentInterval = setInterval(function(){updateComment();}, 2000);
 		if(currentPage.includes("#") && currentPage !="home"){
@@ -194,8 +197,9 @@
 			event.target.parentElement.removeAttribute("class");
 		}
 		
-		$(".navBtns").click(function(event) {
+		<%-- $(".navBtns").click(function(event) {
 			if(commentInterval != null) clearInterval(commentInterval);
+			if(seenInterval !=null) clearInterval(seenInterval)
 			var next = event.target.parentElement.getAttribute("id");
 			var data = {page : next == "createGroup"?"createGroup":"getGroup"};
 			var nextPage = next;
@@ -234,7 +238,7 @@
 				});
 			}
 		});
-
+ --%>
 		function comment() {
 			var comment = CKEDITOR.instances['comment'].getData();
 			if (comment == "" || comment == null) {
@@ -275,7 +279,9 @@
 					var divContent = "";
 
 					$.each(data, function(index, item) {
-						var newDiv = "<div class='comment'>" + item.comment
+						var newDiv = "<div class='comment'><span class='user' onclick=startChat('"
+							+ item.user
+							+ "')>"+item.user+" :</span>" + item.comment
 								+ "</div>"
 						divContent = divContent + newDiv;
 					});
@@ -351,6 +357,7 @@
 		}
 
 		function addParticipant(email) {
+			debugger;
 			data = {
 				id : $("#id").val(),
 				email : email,
@@ -379,6 +386,7 @@
 		function chat(participant){
 			if(updateChatInterval!=null) clearInterval(updateChatInterval);
 			$(".chatBox").show();
+			$("#send").attr("onclick","submitChat()");
 			var disId = $("#id").val();
 			var data = {
 					discussionId : disId,
@@ -416,7 +424,8 @@
 					discussionId : $("#disId").val(),
 					part : $("#part").val(),
 					message:$("#chatMessage").val(),
-					isByCreator:"true"
+					isByCreator:"true",
+					action:"chat"
 			}
 			
 			$.ajax({
@@ -484,6 +493,108 @@
 
 						});
 		}
+		
+		function getAddedContent(){
+			var data = {
+					id : $("#id").val(),
+					page: "getAddedContents",
+					edit:"true"
+			};
+			
+			$.ajax({
+				url:"group",
+				type:"GET",
+				data:data,
+				success: function(resp){
+				$("#addedContents").html(resp);
+				}				
+			})
+		}
+		
+		function startChat(user) {
+			//if (updateChatInterval != null)
+			//clearInterval(updateChatInterval);
+			$("#send").attr("onclick","submitParticipantsChat()");
+			 var data = {
+				discussionId : $("#id").val(),
+				part : user,
+				action : 'chatFromParticipants'
+			}
+			 
+			$.ajax({
+				url : "chat",
+				type : "GET",
+				data : data,
+				success : function(resp) {
+					console.log(resp);
+					$(".chatBox").show();
+					$(".chatSpan").html(user);
+					$(".chatBody").html(resp);
+
+					$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					updateChatInterval = setInterval(function() {
+						updateParticipantsChat()
+					}, 1000);
+					//updateSeenStatus(); 
+				}
+			}); 
+
+		}
+		
+		function updateParticipantsChat(sendDown) {
+			if (!($("#disId").val() && $("#part").val())) {
+				return false;
+			}
+			var data = {
+				discussionId : $("#disId").val(),
+				part : $("#part").val(),
+				action : 'chatFromParticipants'
+			}
+
+			$.ajax({
+				url : "chat",
+				type : "GET",
+				data : data,
+				success : function(resp) {
+					if ($(".chatBody").html() != resp) {
+						$(".chatBody").html(resp)
+
+					}
+
+					if (sendDown) {
+						$(".chatBody")
+								.scrollTop($(".chatBody")[0].scrollHeight);
+					}
+
+				}
+			});
+		}
+		
+		function submitParticipantsChat(){
+			if($("#chatMessage").val()=="" || $("#chatMessage").val() == null || $("#chatMessage").val() == undefined){
+				return false;
+			}
+			
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					message:$("#chatMessage").val(),
+					action:"chatFromParticipants"
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"POST",
+				data:data,
+				success: function(){
+					$("#chatMessage").val("");
+					updateParticipantsChat(true);
+				}
+			});
+			
+		}
+		
+		
 	</script>
 
 </body>

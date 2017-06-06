@@ -81,21 +81,30 @@ public class Group extends HttpServlet {
 			createGroup(request, response);
 		} else if (pageData.equals("updateGroup")) {
 			updateGroup(request, response);
-		}else if (pageData.equals("search")) {
+		} else if (pageData.equals("search")) {
 			response.setContentType("application/json");
 			PrintWriter out = response.getWriter();
 			out.print(searchEmail(request, response));
 			out.flush();
 		} else if (pageData.equals("groupWithId")) {
 			groupWithId(request, response);
-		} else if(pageData.equals("countVote")){
+		} else if (pageData.equals("getAddedContents")) {
 			try {
-				countVote(request,response);
+				request.setAttribute("content", getAddedContents(request, response));
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else {
+			request.setAttribute("edit", (String)request.getParameter("edit"));
+			getServletContext().getRequestDispatcher("/view/addedContentTemplate.jsp").forward(request, response);
+		} else if (pageData.equals("countVote")) {
+			try {
+				countVote(request, response);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
 			try {
 				getGroupList(request, response);
 			} catch (SQLException e) {
@@ -112,6 +121,108 @@ public class Group extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+
+	public JSONArray getAddedContents(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, JSONException, IOException {
+		Connection conn = null;
+		Statement stmt = null;
+		JSONArray rs = null;
+		conn = pool.getConnection();
+		String query = "SELECT * FROM tbl_discontent where disId = '" + Integer.parseInt(request.getParameter("id"))
+				+ "'";
+		stmt = conn.createStatement();
+		ResultSet result = stmt.executeQuery(query);
+		rs = ResultSetConverter.convert(result);
+
+		int userId = searchUserByUserName().getJSONObject(0).getInt("id");
+		for (int i = 0; i <= rs.length() - 1; i++) {
+			JSONObject object = rs.getJSONObject(i);
+			int votedVal = checkContentVote(rs.getJSONObject(i).getInt("id"), userId);
+			object.put("vote", getContentVote(object.getInt("id")));
+			if (votedVal > 0)
+				object.put("voted", votedVal);
+			else
+				object.put("voted", 0);
+		}
+		stmt.close();
+		conn.close();
+		return rs;
+	}
+
+	public int checkContentVote(int disContId, int userId) throws SQLException {
+		Connection conn = pool.getConnection();
+		Statement stmt = conn.createStatement();
+		String query = "Select * from tbl_discontentVote where disContentId = '" + disContId + "' and userId=" + userId;
+		ResultSet result = stmt.executeQuery(query);
+		int voteType = 0;
+		if (result.next())
+			voteType = result.getInt("voteType");
+		stmt.close();
+		conn.close();
+		return voteType;
+	}
+
+	public JSONArray getContentVote(int id) throws SQLException, IOException {
+		Connection conn = pool.getConnection();
+		Statement stmt = conn.createStatement();
+		String query = "Select count(id) as voteCount,voteType from tbl_discontentVote where disContentId = '" + id
+				+ "' group by voteType";
+		ResultSet result = stmt.executeQuery(query);
+		JSONArray returnResult = ResultSetConverter.convert(result);
+		stmt.close();
+		conn.close();
+		boolean vote1 = false;
+		boolean vote2 = false;
+		boolean vote3 = false;
+		boolean vote4 = false;
+
+		for (int i = 0; i <= returnResult.length() - 1; i++) {
+
+			if (returnResult.getJSONObject(i).getInt("voteType") == 1) {
+				vote1 = true;
+			}
+
+			if (returnResult.getJSONObject(i).getInt("voteType") == 2) {
+				vote2 = true;
+			}
+
+			if (returnResult.getJSONObject(i).getInt("voteType") == 3) {
+				vote3 = true;
+			}
+
+			if (returnResult.getJSONObject(i).getInt("voteType") == 4) {
+				vote4 = true;
+			}
+
+		}
+		JSONObject dummy = new JSONObject();
+		if (!vote1) {
+			dummy.put("voteType", "1");
+			dummy.put("voteCount", 0);
+			returnResult.put(dummy);
+			dummy = new JSONObject();
+		}
+		if (!vote2) {
+			dummy.put("voteType", "2");
+			dummy.put("voteCount", 0);
+			returnResult.put(dummy);
+			dummy = new JSONObject();
+		}
+		if (!vote3) {
+			dummy.put("voteType", "3");
+			dummy.put("voteCount", 0);
+			returnResult.put(dummy);
+			dummy = new JSONObject();
+		}
+		if (!vote4) {
+			dummy.put("voteType", "4");
+			dummy.put("voteCount", 0);
+			returnResult.put(dummy);
+			dummy = new JSONObject();
+		}
+		return returnResult;
+
 	}
 
 	public void getGroupList(HttpServletRequest request, HttpServletResponse response)
@@ -136,25 +247,25 @@ public class Group extends HttpServlet {
 			}
 		} else {
 			request.setAttribute("create", true);
-			getServletContext().getRequestDispatcher("/view/createGroup.jsp").forward(request, response);
+			getServletContext().getRequestDispatcher("/view/createNew.jsp").forward(request, response);
 		}
 
 	}
-	
+
 	public void updateGroup(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-			boolean saved = updateAndSaveGroup(request, response);
-			if (saved) {
-				PrintWriter out = response.getWriter();
-				out.print("success");
-			} else {
-				// request.setAttribute("errorMessage", "Cannot create
-				// group!!");
-				PrintWriter out = response.getWriter();
-				out.print("Cannot Update Group!!");
-			}
-		
+
+		boolean saved = updateAndSaveGroup(request, response);
+		if (saved) {
+			PrintWriter out = response.getWriter();
+			out.print("success");
+		} else {
+			// request.setAttribute("errorMessage", "Cannot create
+			// group!!");
+			PrintWriter out = response.getWriter();
+			out.print("Cannot Update Group!!");
+		}
+
 	}
 
 	public void groupWithId(HttpServletRequest request, HttpServletResponse response)
@@ -165,7 +276,7 @@ public class Group extends HttpServlet {
 		JSONArray returnResult = null;
 		int userId = 0;
 		int creatorId = 0;
-		Object date=null;
+		Object date = null;
 		try {
 			// Get a connection from the pool
 			conn = establishConnection();
@@ -181,13 +292,14 @@ public class Group extends HttpServlet {
 			try {
 				returnResult = ResultSetConverter.convert(result);
 				userId = searchUserByUserName().getJSONObject(0).getInt("id");
-				int voteType = checkVote(Integer.parseInt((String) request.getParameter("id")),userId);
+				int voteType = checkVote(Integer.parseInt((String) request.getParameter("id")), userId);
 				if (returnResult != null) {
 					for (int i = 0; i < returnResult.length(); i++) {
 						JSONObject rec = returnResult.getJSONObject(i);
 						request.setAttribute("title", rec.get("dis_title"));
 						request.setAttribute("description", rec.get("dis_descreption"));
-						//request.setAttribute("endTime", rec.get("dis_endDate"));
+						// request.setAttribute("endTime",
+						// rec.get("dis_endDate"));
 						date = rec.get("dis_endDate");
 						request.setAttribute("id", rec.get("dis_id"));
 						creatorId = rec.getInt("creator_id");
@@ -210,18 +322,18 @@ public class Group extends HttpServlet {
 				ex.printStackTrace();
 			}
 		}
-		if(userId == creatorId){
+		if (userId == creatorId) {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-	        request.setAttribute("endTime", simpleDateFormat.format(date));	       
+			request.setAttribute("endTime", simpleDateFormat.format(date));
 			request.setAttribute("edit", true);
-			getServletContext().getRequestDispatcher("/view/editDiscussion.jsp").forward(request, response);	
-		}
-		else{
+			getServletContext().getRequestDispatcher("/view/editDiscussion.jsp").forward(request, response);
+		} else {
 			request.setAttribute("endTime", date);
+			request.setAttribute("edit", false);
 			getServletContext().getRequestDispatcher("/view/displayGroup.jsp").forward(request, response);
 		}
 		// return returnResult;
-		
+
 	}
 
 	public JSONArray searchEmail(HttpServletRequest request, HttpServletResponse response)
@@ -307,7 +419,7 @@ public class Group extends HttpServlet {
 					participants = ((String) request.getParameter("participants")).split(",");
 				} else {
 					participants = new String[1];
-					participants[0] =(String) request.getParameter("participants");
+					participants[0] = (String) request.getParameter("participants");
 				}
 				for (String participant : participants) {
 					Connection connStmt = establishConnection();
@@ -316,8 +428,8 @@ public class Group extends HttpServlet {
 					try {
 						partStmt = connStmt.createStatement();
 						result = partStmt.executeUpdate(queryParticipants);
-						if(result>0){
-							sendEmailToParticipants(participant,request);
+						if (result > 0) {
+							sendEmailToParticipants(participant, request);
 						}
 					} catch (SQLException ex) {
 						request.setAttribute("errorMessage", "Something went wrong!!!!");
@@ -368,10 +480,50 @@ public class Group extends HttpServlet {
 			int creatorId = 0;
 			creatorId = searchUserByUserName().getJSONObject(0).getInt("id");
 
-			String query = "update tbl_discussion set dis_title = '" + (String) request.getParameter("title") + "', dis_descreption ='"
-					+ (String) request.getParameter("description") + "', dis_endDate = '" + endDate + "' where dis_id = "+Integer.parseInt(request.getParameter("id"));
-			
-			
+			String query = "update tbl_discussion set dis_title = '" + (String) request.getParameter("title")
+					+ "', dis_endDate = '" + endDate + "' where dis_id = "
+					+ Integer.parseInt(request.getParameter("id"));
+
+			stmt = conn.createStatement();
+			result = stmt.executeUpdate(query);
+			if ((String) request.getParameter("addedDescription") != null) {
+				// System.out.println((String)request.getParameter("voteEnable"));
+				int resultContent = addContent(request, response);
+				if (resultContent == 0) {
+					request.setAttribute("errorMessage", "Something went wrong with added content!");
+				}
+			}
+		} catch (SQLException ex) {
+			request.setAttribute("errorMessage", "Something went wrong!");
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close(); // return to pool
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+
+		}
+		return result > 0;
+	}
+
+	public int addContent(HttpServletRequest request, HttpServletResponse response) {
+		int groupId = 0;
+		Connection conn = null;
+		Statement stmt = null;
+		int result = 0;
+		try {
+			conn = establishConnection();
+			int voteEnabled = 0;
+			if (request.getParameter("voteEnable") != null)
+				if (((String) request.getParameter("voteEnable")).equals("on"))
+					voteEnabled = 1;
+			String query = "insert into tbl_discontent(disId,description,voteEnabled) values("
+					+ Integer.parseInt(request.getParameter("id")) + ",'"
+					+ (String) request.getParameter("addedDescription") + "'," + voteEnabled + ")";
+
 			stmt = conn.createStatement();
 			result = stmt.executeUpdate(query);
 		} catch (SQLException ex) {
@@ -387,9 +539,9 @@ public class Group extends HttpServlet {
 			}
 
 		}
-		return result>0;
+		return result;
 	}
-	
+
 	public JSONArray getAllGroup(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 		String email = null;
 		try {
@@ -427,62 +579,64 @@ public class Group extends HttpServlet {
 
 	}
 
-	public void countVote(HttpServletRequest request,HttpServletResponse response) throws SQLException, IOException{
+	public void countVote(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();
-		String query = "Select count(id) as voteCount,vote_type from tbl_vote where dis_id = '" + Integer.parseInt(request.getParameter("id")) + "' group by vote_type";
+		String query = "Select count(id) as voteCount,vote_type from tbl_vote where dis_id = '"
+				+ Integer.parseInt(request.getParameter("id")) + "' group by vote_type";
 		ResultSet result = stmt.executeQuery(query);
 		JSONArray returnResult = ResultSetConverter.convert(result);
 		stmt.close();
 		conn.close();
-		
+
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		out.print(returnResult);
 		out.flush();
 
 	}
-	
-	public int checkVote(int disId,int userId) throws SQLException{
+
+	public int checkVote(int disId, int userId) throws SQLException {
 		Connection conn = pool.getConnection();
 		Statement stmt = conn.createStatement();
-		String query = "Select * from tbl_vote where dis_id = '" + disId + "' and userId="+userId;
+		String query = "Select * from tbl_vote where dis_id = '" + disId + "' and userId=" + userId;
 		ResultSet result = stmt.executeQuery(query);
 		int voteType = 0;
-		if(result.next()) voteType = result.getInt("vote_type");
+		if (result.next())
+			voteType = result.getInt("vote_type");
 		stmt.close();
 		conn.close();
 		return voteType;
 	}
 
-	public void sendEmailToParticipants(String participant,HttpServletRequest request){
-			final String username = "creedsushil2@gmail.com";
-			final String password = "webdesign@123";
-			Properties props = new Properties();
-			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable", "true");
-			props.put("mail.smtp.host", "smtp.gmail.com");
-			props.put("mail.smtp.port", "587");
-			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
-				}
-			});
-			try {
-
-				Message message = new MimeMessage(session);
-				message.setFrom(new InternetAddress("creedsushil2@gmail.com"));
-				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant));
-				message.setSubject("You are added to the disscussion in GDSS");
-				message.setText("Please click the link below:\n\n" + request.getRequestURL());
-
-				Transport.send(message);
-
-			} catch (MessagingException e) {
-				request.setAttribute("errorMessage", "Cannot send email please remove and add user again!!");
-				//throw new RuntimeException(e);
+	public void sendEmailToParticipants(String participant, HttpServletRequest request) {
+		final String username = "creedsushil2@gmail.com";
+		final String password = "webdesign@123";
+		Properties props = new Properties();
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.port", "587");
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
 			}
-			
+		});
+		try {
+
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress("creedsushil2@gmail.com"));
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant));
+			message.setSubject("You are added to the disscussion in GDSS");
+			message.setText("Please click the link below:\n\n" + request.getRequestURL());
+
+			Transport.send(message);
+
+		} catch (MessagingException e) {
+			request.setAttribute("errorMessage", "Cannot send email please remove and add user again!!");
+			// throw new RuntimeException(e);
+		}
+
 	}
-	
+
 }

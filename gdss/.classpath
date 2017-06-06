@@ -33,5 +33,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="E:/HIT/New folder/jasperreports-htmlcomponent-5.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

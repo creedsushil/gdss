@@ -7,16 +7,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Dashboard</title>
+<title>Group</title>
 
-<script
-	src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
-	<script
-	src='webjars/ckeditor/4.4.7/standard/config.js'></script>
-	<script
-	src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
-	
-	
+<script src='webjars/ckeditor/4.4.7/standard/ckeditor.js'></script>
+<script src='webjars/ckeditor/4.4.7/standard/config.js'></script>
+<script src='webjars/ckeditor/4.4.7/standard/build-config.js'></script>
+
+
 
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
@@ -35,11 +32,10 @@
 	href="resource/tokenInput/styles/token-input.css" />
 <link rel="stylesheet" href="resource/css/stylesMain.css"
 	type="text/css" />
-	
-	<script
-	src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
 
-	
+<script src='webjars/datetimepicker/2.3.4/jquery.datetimepicker.js'></script>
+
+
 <meta name="viewport"
 	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 </head>
@@ -56,38 +52,46 @@
 
 	</header> <nav id="mainnav">
 	<ul>
-		<li class="navBtns" id="home"><a href="#home">Home</a></li>
-		<li class="navBtns selected-item" id="group"><a href="#group">My
+		<li class="navBtns" id="home"><a href="<%=request.getContextPath()%>/index">Home</a></li>
+		<li class="navBtns selected-item" id="group"><a href="group?page=getGroup">My
 				Discussion</a></li>
-		<li class="navBtns" id="createGroup"><a href="#createGroup">Create
+		<li class="navBtns" id="createGroup"><a href="group?page=createGroup">Create
 				New Discussion</a></li>
-		<li class="navBtns" id="settings"><a href="#settings">Settings</a></li>
-		<li class="navBtns" id="chat"><a href="#chat">Chat</a></li>
+		<li class="navBtns" id="settings"><a href="<%=request.getContextPath()%>/settings">Settings</a></li>
+		<li class="navBtns" id="chat"><a href="<%=request.getContextPath()%>/chat?action=list">Chat</a></li>
 		<li><a href="<%=request.getContextPath()%>/logout">Sign out</a></li>
 	</ul>
 	</nav> </aside> <section id="content" class="column-right"> <article>
-	<div class="container" style="max-width: 700px; margin: 0 0 0 0;float:left;">
+	<div class="container"
+		style="max-width: 700px; margin: 0 0 0 0; float: left;">
 		<div class="card" style="display: none;"></div>
 		<div class="card" style="padding: 0 !important;">
 			<div id="main">
 				<h1 class="title">${title }
-					<span id="timer" style="float: right;"></span> <input type="hidden"
+					<input type="hidden" name="id" id="id" value="${id}"> <span
+						id="timer" style="float: right;"></span> <input type="hidden"
 						id="time" value="${endTime }">
 				</h1>
 				<div class="description">${description }
 					<br /> <br /> <span class="voteCount" id="up">0</span> <i
-						class="fa fa-thumbs-up voteUp" id="voteType_1" aria-hidden="true"
-						onclick="vote(1);" style=""></i> <span class="voteCount"
-						id="mayBe">0</span> <i class="fa fa-hand-o-up voteMayBe"
-						id="voteType_2" aria-hidden="true" onclick="vote(2);" style=""></i>
-
-					<span class="voteCount" id="mayBeNot">0</span> <i
-						class="fa fa-hand-o-down voteMayBeNot" id="voteType_3"
+						class="fa fa-thumbs-up voteUp voteBtn" id="voteType_1"
+						aria-hidden="true" onclick="vote(1);" style=""></i> <span
+						class="voteCount" id="mayBe">0</span> <i
+						class="fa fa-hand-o-up voteMayBe voteBtn" id="voteType_2"
+						aria-hidden="true" onclick="vote(2);" style=""></i> <span
+						class="voteCount" id="mayBeNot">0</span> <i
+						class="fa fa-hand-o-down voteMayBeNot voteBtn" id="voteType_3"
 						aria-hidden="true" onclick="vote(3);" style=""></i> <span
 						class="voteCount" id="down">0</span> <i
-						class="fa fa-thumbs-down voteDown" id="voteType_4"
+						class="fa fa-thumbs-down voteDown voteBtn" id="voteType_4"
 						aria-hidden="true" onclick="vote(4);" style=""></i>
 				</div>
+				<div class="addedContent">
+					<h1 class="title">Added Contents</h1>
+					<div id="addedContents"></div>
+				</div>
+
+
 				<div id="commentsDiv" style="margin-bottom: 20px;"></div>
 				<div id="commentField">
 					<div class="input-container">
@@ -113,7 +117,9 @@
 	</footer> </section>
 
 	<div class="clear"></div>
-	<div class="modal"><!-- overlay or cover --></div>
+	<div class="modal">
+		<!-- overlay or cover -->
+	</div>
 	<div class="chatBox">
 		<div class="chatHead">
 			<span class="chatSpan"></span><span
@@ -144,6 +150,7 @@
 		var voteType = ${voteType};
 		countVote(voteType);
 		updateComment();
+		getAddedContent();
 		commentInterval = setInterval(function(){updateComment();}, 2000);
 		timerInterval = setInterval(function(){ setTimer()
 		 }, 1000)
@@ -162,6 +169,10 @@
 					$("#group").removeClass("selected-item");
 					$("#" + currentPage).addClass("selected-item");
 					current = currentPage;
+					if(current!="group"){
+						clearInterval(timerInterval);
+						clearInterval(commentInterval)
+					}
 					document.location.hash = currentPage;
 					
 					$("#main").html(resp);
@@ -177,6 +188,7 @@
 	});
 	
 	function setTimer(){
+		if(!document.getElementById("time")) return false;
 			var time = (document.getElementById("time").value).split('.')[0];
 			var date = new Date(time).getTime();			
 			
@@ -185,11 +197,13 @@
 	    // Find the distance between now an the count down date
 	    var distance = date - now;
 	    if (distance < 0 || isNaN(distance)) {
-	    	$("#voteType_1").removeAttr("onclick");
+	    	/* $("#voteType_1").removeAttr("onclick");
 	    	$("#voteType_2").removeAttr("onclick");
 	    	$("#voteType_3").removeAttr("onclick");
-	    	$("#voteType_4").removeAttr("onclick");
+	    	$("#voteType_4").removeAttr("onclick"); */
+	    	$(".voteBtn").removeAttr("onclick");
 	    	$("#commentField").html("");
+	    	clearInterval(commentInterval);
 	    	document.getElementById("timer").innerHTML = "00:00:00";
 	    	return false;
 	    }
@@ -229,7 +243,7 @@
 			event.target.parentElement.removeAttribute("class");
 		}
 		
-		$(".navBtns").click(function(event) {
+		<%-- $(".navBtns").click(function(event) {
 			if(commentInterval != null) clearInterval(commentInterval);
 			if(timerInterval != null) clearInterval(timerInterval);
 			var next = event.target.parentElement.getAttribute("id");
@@ -270,7 +284,7 @@
 				});
 			}
 		});
-
+ --%>
 		function comment() {
 			var comment = CKEDITOR.instances['description'].getData();
 			if (comment == "" || comment == null) {
@@ -299,25 +313,35 @@
 				id : $("#id").val(),
 				count : $("#commentsDiv").children().length
 			};
-			$.ajax({
-				url : "comment",
-				data : data,
-				type : "POST",
-				success : function(data) {
-					//var text= data.response.venue.tips.groups.items.text;
-					if (data == null) {
-						return false;
-					}
-					var divContent = $("#commentsDiv").html();
+			$
+					.ajax({
+						url : "comment",
+						data : data,
+						type : "POST",
+						success : function(data) {
+							//var text= data.response.venue.tips.groups.items.text;
+							if (data == null) {
+								return false;
+							}
+							var divContent = $("#commentsDiv").html();
 
-					$.each(data, function(index, item) {
-						var newDiv = "<div class='comment'>" + item.comment
-								+ "</div>"
-						divContent = divContent + newDiv;
+							$
+									.each(
+											data,
+											function(index, item) {
+												var newDiv = "<div class='comment'><span class='user' onclick=startChat('"
+														+ item.user
+														+ "')>"
+														+ item.user
+														+ " :</span>"
+														+ item.comment
+														+ "</div>"
+												divContent = divContent
+														+ newDiv;
+											});
+							$("#commentsDiv").html(divContent);
+						}
 					});
-					$("#commentsDiv").html(divContent);
-				}
-			});
 		}
 
 		function vote(voteValue) {
@@ -332,7 +356,7 @@
 				data : data,
 				type : "POST",
 				success : function(data) {
-					
+
 					if (data == true) {
 						countVote(voteValue);
 					}
@@ -386,89 +410,7 @@
 				}
 			});
 		}
-		
-		var updateChatInterval = null;
-		var updateSeenInterval = setInterval(function(){updateSeenStatus();}, 10000);
-		function chat(disId,participant,title){
-			if(updateChatInterval!=null) clearInterval(updateChatInterval);
-			$(".chatBox").show();
-			var data = {
-					discussionId : disId,
-					part : participant,
-					action:'chat'
-			}
-			
-			$.ajax({
-				url:"chat",
-				type:"GET",
-				data:data,
-				success: function(resp){
-					$(".chatSpan").html(title);
-					$(".chatBody").html(resp);
-					
-					$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
-					updateChatInterval = setInterval(function(){updateChat()},1000);
-					updateSeenStatus();
-				}
-			});
-			
-		}
 
-		function closeChat(){
-			$('.chatBox').hide();
-			clearInterval(updateChatInterval);
-		}
-
-		function submitChat(){
-			if($("#chatMessage").val()=="" || $("#chatMessage").val() == null || $("#chatMessage").val() == undefined){
-				return false;
-			}
-			var data = {
-					discussionId : $("#disId").val(),
-					part : $("#part").val(),
-					message:$("#chatMessage").val(),
-					isByCreator:false
-			}
-			
-			$.ajax({
-				url:"chat",
-				type:"POST",
-				data:data,
-				success: function(){
-					$("#chatMessage").val("");
-					updateChat(true);
-				}
-			});
-			
-		}
-
-		function updateChat(sendDown){
-			if(!($("#disId").val() && $("#part").val())){
-				return false;
-			}
-			var data = {
-					discussionId : $("#disId").val(),
-					part : $("#part").val(),
-					action:'chat'
-			}
-			
-			$.ajax({
-				url:"chat",
-				type:"GET",
-				data:data,
-				success: function(resp){
-					if($(".chatBody").html()!=resp){
-						$(".chatBody").html(resp)
-
-					}	
-					
-					if(sendDown){
-						$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
-					}
-					
-				}
-			});
-		}
 
 		function mousePointedMes(event) {
 			jQuery(event.target).closest("tr").addClass("pointed");
@@ -478,42 +420,144 @@
 			jQuery(event.target).closest("tr").removeClass("pointed");
 		}
 
-		function updateSeenStatus(){
+		function updateSeenStatus() {
 			var data = {
-					action:'updateSeenStatus'
+				action : 'updateSeenStatus'
 			}
-			
+
 			$.ajax({
-				url:"chat",
-				type:"GET",
-				data:data,
-				success: function(resp){
+				url : "chat",
+				type : "GET",
+				data : data,
+				success : function(resp) {
 					$("#tBody").html(resp);
 				}
 			});
 		}
 
-		function filterMessageList(clicked){
+		function filterMessageList(clicked) {
 			$body.addClass("loading");
-			var checked = $("#"+clicked+":checked").attr("checked");
-			if(clicked=="read"){
-				if(checked!=undefined){
+			var checked = $("#" + clicked + ":checked").attr("checked");
+			if (clicked == "read") {
+				if (checked != undefined) {
 					$(".read").show();
-				}else{
+				} else {
 					$(".read").hide();
 				}
-				
-			}else{
-				if(checked!=undefined){
+
+			} else {
+				if (checked != undefined) {
 					$(".unread").show();
-				}else{
+				} else {
 					$(".unread").hide();
 				}
 			}
 			$body.removeClass("loading");
 		}
 
+		function getAddedContent() {
+			var data = {
+				id : $("#id").val(),
+				page : "getAddedContents"
+			};
+
+			$.ajax({
+				url : "group",
+				type : "GET",
+				data : data,
+				success : function(resp) {
+					$("#addedContents").html(resp);
+				}
+			})
+		}
+
+		function startChat(user) {
+			//if (updateChatInterval != null)
+			//clearInterval(updateChatInterval);
+			$("#send").attr("onclick","submitParticipantsChat()");
+			 var data = {
+				discussionId : $("#id").val(),
+				part : user,
+				action : 'chatFromParticipants'
+			}
+			 
+			$.ajax({
+				url : "chat",
+				type : "GET",
+				data : data,
+				success : function(resp) {
+					console.log(resp);
+					$(".chatBox").show();
+					$(".chatSpan").html(user);
+					$(".chatBody").html(resp);
+
+					$(".chatBody").scrollTop($(".chatBody")[0].scrollHeight);
+					updateChatInterval = setInterval(function() {
+						updateParticipantsChat()
+					}, 1000);
+					//updateSeenStatus(); 
+				}
+			}); 
+
+		}
 		
+		function updateParticipantsChat(sendDown) {
+			if (!($("#disId").val() && $("#part").val())) {
+				return false;
+			}
+			var data = {
+				discussionId : $("#disId").val(),
+				part : $("#part").val(),
+				action : 'chatFromParticipants'
+			}
+
+			$.ajax({
+				url : "chat",
+				type : "GET",
+				data : data,
+				success : function(resp) {
+					if ($(".chatBody").html() != resp) {
+						$(".chatBody").html(resp)
+
+					}
+
+					if (sendDown) {
+						$(".chatBody")
+								.scrollTop($(".chatBody")[0].scrollHeight);
+					}
+
+				}
+			});
+		}
+		
+		function submitParticipantsChat(){
+			if($("#chatMessage").val()=="" || $("#chatMessage").val() == null || $("#chatMessage").val() == undefined){
+				return false;
+			}
+			
+			var data = {
+					discussionId : $("#disId").val(),
+					part : $("#part").val(),
+					message:$("#chatMessage").val(),
+					action:"chatFromParticipants"
+			}
+			
+			$.ajax({
+				url:"chat",
+				type:"POST",
+				data:data,
+				success: function(){
+					$("#chatMessage").val("");
+					updateParticipantsChat(true);
+				}
+			});
+			
+		}
+		
+		function closeChat(){
+			$('.chatBox').hide();
+			clearInterval(updateChatInterval);
+		}
 	</script>
 
 </body>
