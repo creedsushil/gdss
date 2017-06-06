@@ -102,12 +102,12 @@ public class PassRecoveryMethods {
 				if (result.next()) {
 					userId = result.getInt(1);
 				} else {
-					request.setAttribute("errorMessage", "Email doesn't match to the record!!");
+					request.setAttribute("errorMessage", "Email doesn't match to the record!");
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				request.setAttribute("errorMessage", "Email doesn't match to the record!!");
+				request.setAttribute("errorMessage", "Email doesn't match to the record!");
 			}
 
 		} catch (SQLException ex) {
@@ -126,7 +126,7 @@ public class PassRecoveryMethods {
 
 		boolean tokenCreated = false;
 		if (result == null) {
-			request.setAttribute("errorMessage", "Couldn't connect to Server!!!");
+			request.setAttribute("errorMessage", "Couldn't connect to Server!");
 		} else {
 			String token = UUID.randomUUID().toString();
 			request.setAttribute("token", token);
@@ -162,7 +162,7 @@ public class PassRecoveryMethods {
 			stmt = conn.createStatement();
 			result = stmt.execute(query);
 		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 			// ex.printStackTrace();
 		} finally {
 			try {

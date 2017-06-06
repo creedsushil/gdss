@@ -243,7 +243,7 @@ public class Group extends HttpServlet {
 				// request.setAttribute("errorMessage", "Cannot create
 				// group!!");
 				PrintWriter out = response.getWriter();
-				out.print("Cannot Create Group!!");
+				out.print("Cannot Create Group!");
 			}
 		} else {
 			request.setAttribute("create", true);
@@ -263,7 +263,7 @@ public class Group extends HttpServlet {
 			// request.setAttribute("errorMessage", "Cannot create
 			// group!!");
 			PrintWriter out = response.getWriter();
-			out.print("Cannot Update Group!!");
+			out.print("Cannot Update Group!");
 		}
 
 	}
@@ -286,7 +286,7 @@ public class Group extends HttpServlet {
 			stmt = conn.createStatement();
 			result = stmt.executeQuery(query);
 		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 			// ex.printStackTrace();
 		} finally {
 			try {
@@ -355,7 +355,7 @@ public class Group extends HttpServlet {
 			stmt = conn.createStatement();
 			result = stmt.executeQuery(query);
 		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 			// ex.printStackTrace();
 		} finally {
 			try {
@@ -432,7 +432,7 @@ public class Group extends HttpServlet {
 							sendEmailToParticipants(participant, request);
 						}
 					} catch (SQLException ex) {
-						request.setAttribute("errorMessage", "Something went wrong!!!!");
+						request.setAttribute("errorMessage", "Something went wrong!");
 					} finally {
 						try {
 							if (partStmt != null)
@@ -447,7 +447,7 @@ public class Group extends HttpServlet {
 
 			}
 		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 		} finally {
 			try {
 				if (stmt != null)
@@ -527,7 +527,7 @@ public class Group extends HttpServlet {
 			stmt = conn.createStatement();
 			result = stmt.executeUpdate(query);
 		} catch (SQLException ex) {
-			request.setAttribute("errorMessage", "Something went wrong!!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 		} finally {
 			try {
 				if (stmt != null)
@@ -633,7 +633,7 @@ public class Group extends HttpServlet {
 			Transport.send(message);
 
 		} catch (MessagingException e) {
-			request.setAttribute("errorMessage", "Cannot send email please remove and add user again!!");
+			request.setAttribute("errorMessage", "Cannot send email please remove and add user again!");
 			// throw new RuntimeException(e);
 		}
 

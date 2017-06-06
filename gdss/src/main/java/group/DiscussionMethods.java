@@ -62,7 +62,7 @@ public class DiscussionMethods {
 			stmt = conn.createStatement();
 			result = stmt.execute(query);
 		} catch (SQLException ex) {
-			request.setAttribute("message", "Something went wrong!!");
+			request.setAttribute("message", "Something went wrong!");
 		} finally {
 			try {
 				if (stmt != null)
@@ -94,7 +94,7 @@ public class DiscussionMethods {
 				returnResult = null;
 			}
 		} catch (SQLException ex) {
-			request.setAttribute("message", "Something went wrong!!");
+			request.setAttribute("message", "Something went wrong!");
 		} finally {
 			try {
 				if (stmt != null)

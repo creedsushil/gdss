@@ -133,7 +133,7 @@ public class Register extends HttpServlet {
 		if (result) {
         	getServletContext().getRequestDispatcher("/login.jsp").forward(request,response);
 		} else {
-			request.setAttribute("errorMessage", "Something went wrong!!!");
+			request.setAttribute("errorMessage", "Something went wrong!");
 			request.setAttribute("register", true);
         	getServletContext().getRequestDispatcher("/login.jsp").forward(request,response);
 		}

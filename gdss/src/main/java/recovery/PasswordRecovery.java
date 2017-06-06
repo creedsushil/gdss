@@ -39,7 +39,7 @@ public class PasswordRecovery extends HttpServlet {
 				if (recovered)
 					getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
 				else {
-					request.setAttribute("errorMessage", "Please try again!!!");
+					request.setAttribute("errorMessage", "Please try again!");
 					getServletContext().getRequestDispatcher("/passwordRecovery.jsp").forward(request, response);
 				}
 
@@ -55,11 +55,11 @@ public class PasswordRecovery extends HttpServlet {
 				boolean mailSent = prm.sendMail(email,
 						request/* (String)request.getAttribute("token") */);
 				if (mailSent == false) {
-					request.setAttribute("errorMessage", "Email couldn't be sent!!");
+					request.setAttribute("errorMessage", "Email couldn't be sent!");
 					request.setAttribute("passRecovery", true);
 					getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
 				} else {
-					request.setAttribute("successMessage", "Please check your email for further instruction!!");
+					request.setAttribute("successMessage", "Please check your email for further instruction!");
 					getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
 				}
 			} else {
